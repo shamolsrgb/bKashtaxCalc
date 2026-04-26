@@ -73,7 +73,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .btn-ghost:hover{border-color:#e2136e;color:#e2136e}
 .btn-pink{background:#e2136e;border:none;color:#fff;border-radius:7px;padding:9px 22px;font-size:var(--t-sm);font-weight:700;cursor:pointer;transition:background .2s;line-height:1.4}
 .btn-pink:hover{background:#c4115e}
-.modal-section-title{font-size:var(--t-xs);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#e2136e;margin:22px 0 12px;padding-bottom:8px;border-bottom:1px solid #2e2e2e;line-height:1.4}
+.modal-section-title{font-size:var(--t-xs);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#999;margin:22px 0 12px;padding-bottom:8px;border-bottom:1px solid #2e2e2e;line-height:1.4}
 .modal-section-title:first-child{margin-top:0}
 
 /* ── Reset confirmation modal ── */
@@ -108,6 +108,9 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .inv-row-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
 .inv-row-header.open{margin-bottom:14px}
 .inv-row-label{font-size:var(--t-sm);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;line-height:1.4}
+.inv-row-remove{background:none;border:1px solid #3a3a3a;border-radius:5px;color:#666;width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.inv-row-remove:hover{border-color:#e2136e;color:#e2136e;background:rgba(226,19,110,.08)}
+.inv-row-remove svg{width:13px;height:13px;fill:currentColor;pointer-events:none}
 .inv-row-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 @media(max-width:600px){.inv-row-fields{grid-template-columns:1fr 1fr}}
 
@@ -193,6 +196,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .settle-tbl tr.section-hdr td{background:#1e1e1e;font-size:var(--t-xs);font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;padding:7px 13px;line-height:1.4}
 .settle-tbl tr.grand td{font-size:var(--t-md);font-weight:800;color:#e2136e;border-top:2px solid #3a3a3a;border-bottom:none;line-height:1.3}
 .settle-tbl tr.subtotal td{color:#aaa;font-weight:700;background:#1e1e1e}
+.settle-tbl tr.overpaid-info td{background:#0d1f0f;border-top:none;border-bottom:none;padding:10px 13px;font-size:var(--t-sm);color:#4caf50;line-height:1.5;text-align:left;font-weight:400}
 .c-red{color:#e2136e}.c-grn{color:#4caf50}.c-yel{color:#ffc107}.c-muted{color:#666}
 
 /* ── Slab breakdown table ── */
@@ -236,11 +240,182 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .suggest-tip.ok{border-color:#1a3a1a;background:#0f1f0f}
 .suggest-tip.ok strong{color:#4caf50}
 
+/* ── Investment picker modal ── */
+.inv-picker-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:500px){.inv-picker-grid{grid-template-columns:1fr}}
+.ioc{position:relative}
+.ioc input[type=checkbox]{position:absolute;opacity:0;width:0;height:0}
+.ioc-label{display:flex;align-items:flex-start;gap:12px;border:1px solid #333;border-radius:8px;padding:13px 14px;cursor:pointer;transition:all .2s;background:#1a1a1a;height:100%}
+.ioc-label:hover{border-color:#555}
+.ioc input:checked+.ioc-label{border-color:#e2136e;background:rgba(226,19,110,.07)}
+.ioc-check{width:20px;height:20px;border:2px solid #444;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s}
+.ioc input:checked+.ioc-label .ioc-check{background:#e2136e;border-color:#e2136e}
+.ioc-check svg{width:12px;height:12px;fill:#fff;display:none}
+.ioc input:checked+.ioc-label .ioc-check svg{display:block}
+.ioc-name{font-size:var(--t-sm);font-weight:700;color:#ccc;line-height:1.3}
+.ioc input:checked+.ioc-label .ioc-name{color:#e2136e}
+.ioc-desc{font-size:var(--t-xs);color:#666;margin-top:3px;line-height:1.4}
+.btn-add-inv{display:flex;align-items:center;gap:6px;background:rgba(226,19,110,.12);border:1px solid rgba(226,19,110,.3);color:#e2136e;border-radius:7px;padding:7px 13px;font-size:var(--t-xs);font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.3px}
+.btn-add-inv:hover{background:rgba(226,19,110,.22);border-color:#e2136e}
+.btn-add-inv svg{width:14px;height:14px;fill:currentColor}
+.inv-empty{text-align:center;padding:28px 16px;color:#555;font-size:var(--t-sm);line-height:1.6}
+.inv-empty svg{width:32px;height:32px;fill:#333;margin:0 auto 10px;display:block}
+
+/* ── Next year impact card ── */
+.impact-card{background:#1e1a0e;border:1px solid #4a3800;border-radius:10px;padding:20px 22px;margin-bottom:14px}
+.impact-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.impact-icon{width:34px;height:34px;background:rgba(255,152,0,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.impact-icon svg{width:18px;height:18px;fill:#ff9800}
+.impact-title{font-size:var(--t-base);font-weight:700;color:#ffcc80;line-height:1.3}
+.impact-subtitle{font-size:var(--t-xs);color:#8a6820;margin-top:2px;line-height:1.4}
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:700px){.impact-grid{grid-template-columns:repeat(2,1fr)}}
+.impact-item{background:#140f00;border:1px solid #3a2800;border-radius:8px;padding:12px 14px}
+.impact-item .i-lbl{font-size:var(--t-xs);color:#8a6820;margin-bottom:5px;line-height:1.4}
+.impact-item .i-val{font-size:var(--t-lg);font-weight:800;letter-spacing:-.5px;line-height:1.2}
+.i-neutral{color:#e0c97f}
+.i-up{color:#ff9800}
+.i-pct{font-size:var(--t-md);font-weight:800;color:#ff9800}
+.impact-note{font-size:var(--t-xs);color:#6a5010;margin-top:12px;line-height:1.5;font-style:italic}
+
+/* ── Tax year selector ── */
+.tax-year-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.tyr-option{position:relative}
+.tyr-option input[type=radio]{position:absolute;opacity:0;width:0;height:0}
+.tyr-label{display:flex;flex-direction:column;gap:4px;border:1px solid #333;border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .2s;background:#1a1a1a}
+.tyr-label:hover{border-color:#555}
+.tyr-option input:checked+.tyr-label{border-color:#e2136e;background:rgba(226,19,110,.07)}
+.tyr-year{font-size:var(--t-sm);font-weight:700;color:#ccc;line-height:1.3}
+.tyr-tag{font-size:var(--t-xs);color:#666;line-height:1.4;margin-top:2px}
+.tyr-option input:checked+.tyr-label .tyr-year{color:#e2136e}
+.tyr-option input:checked+.tyr-label .tyr-tag{color:#a0506a}
+
 /* ── Misc ── */
 .mt10{margin-top:10px}.mt12{margin-top:12px}.mt14{margin-top:14px}
+
+/* ── Table scroll wrappers ── */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:6px}
+
+/* ── Tabs: always scrollable, hide scrollbar ── */
+.tabs-nav{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs-nav::-webkit-scrollbar{display:none}
+
+/* ── Hamburger menu ── */
+.ham-btn{background:rgba(255,255,255,.18);border:none;border-radius:7px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;position:relative}
+.cfg-btn{display:none}
+.ham-btn:hover{background:rgba(255,255,255,.30)}
+.ham-btn svg{width:20px;height:20px;fill:#fff}
+.ham-menu{position:absolute;top:calc(100% + 8px);right:0;background:#2a2a2a;border:1px solid #3a3a3a;border-radius:10px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:500;overflow:hidden;display:none}
+.ham-menu.open{display:block}
+.ham-item{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:#e0e0e0;font-size:var(--t-sm);font-weight:600;padding:13px 16px;cursor:pointer;text-align:left;transition:background .15s;font-family:inherit}
+.ham-item:hover{background:#333}
+.ham-item svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
+.ham-item.danger{color:#e2136e}
+.ham-item.danger:hover{background:rgba(226,19,110,.1)}
+.ham-divider{height:1px;background:#333;margin:0}
+
+/* ── Logout modal ── */
+.logout-modal{max-width:400px}
+.logout-warn-icon{width:56px;height:56px;background:rgba(226,19,110,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.logout-warn-icon svg{width:26px;height:26px;fill:#e2136e}
+
+/* ── Mobile: ≤ 600px ── */
+@media(max-width:600px){
+  /* Stats bar: hidden on mobile */
+  .stats-bar{display:none}
+
+  /* Tabs: sticky directly under header (header ≈ 58px) */
+  .tabs-wrapper{position:sticky;top:58px}
+
+  /* Header: hide subtitle & reset text to save space */
+  .header-text p{display:none}
+  .reset-btn .btn-txt{display:none}
+  .reset-btn{padding:0 10px;gap:0}
+
+  /* Stats bar: tighter text */
+  .su-label{font-size:11px;letter-spacing:.2px}
+  .su-val{font-size:var(--t-base);letter-spacing:-.3px}
+
+  /* Cards: tighter padding */
+  .card{padding:16px 14px}
+
+  /* Income summary: 2-column wrap */
+  .income-summary{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .inc-item{border-right:none;border-bottom:1px solid #2a2a2a;padding:10px 0}
+  .inc-item:nth-child(odd){border-right:1px solid #2a2a2a;padding-right:10px}
+  .inc-item:last-child{border-bottom:none}
+
+  /* Config modal g3 → 1-column inside modal body */
+  .modal-body .g3{grid-template-columns:1fr 1fr}
+
+  /* Investment picker: 1 column */
+  .inv-picker-grid{grid-template-columns:1fr}
+
+  /* Impact grid: already 2-col at 700px; shrink values */
+  .impact-item .i-val{font-size:var(--t-base)}
+  .i-pct{font-size:var(--t-base)}
+  .impact-grid{gap:8px}
+
+  /* Deduction total bar: stack on very small */
+  .ded-total-bar{flex-direction:column;align-items:flex-start;gap:6px}
+  .ded-total-bar span:last-child{font-size:var(--t-md)}
+
+  /* Suggestion grid: 2 items per row */
+  .suggest-grid{grid-template-columns:1fr 1fr}
+
+  /* Settlement & slab tables: reduce cell padding */
+  .settle-tbl td{padding:8px 10px;font-size:var(--t-sm)}
+  .brk-tbl td,.brk-tbl th{padding:8px 8px;font-size:var(--t-sm)}
+}
+
+/* ── Mobile: ≤ 420px ── */
+@media(max-width:420px){
+  .modal-body .g3{grid-template-columns:1fr}
+  .header-text h1{font-size:var(--t-base)}
+  .impact-grid{grid-template-columns:1fr 1fr}
+  .sum-grid5{grid-template-columns:1fr 1fr}
+  .income-summary{grid-template-columns:1fr}
+  .inc-item{border-right:none!important;padding-right:0!important}
+}
+
+/* ── Password gate ── */
+#pwGate{position:fixed;inset:0;background:#181818;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.pw-box{background:#242424;border:1px solid #2e2e2e;border-radius:16px;padding:40px 36px;width:100%;max-width:400px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+.pw-logo{width:56px;height:56px;background:#e2136e;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-weight:900;color:#fff;font-size:18px;letter-spacing:-1px}
+.pw-box h2{font-size:20px;font-weight:700;color:#e0e0e0;margin-bottom:6px;line-height:1.3}
+.pw-box p{font-size:13px;color:#888;margin-bottom:28px;line-height:1.5}
+.pw-field{position:relative;margin-bottom:14px}
+.pw-field input{width:100%;background:#141414;border:1px solid #333;border-radius:8px;color:#e0e0e0;padding:13px 44px 13px 14px;font-size:16px;outline:none;font-family:inherit;transition:border-color .2s;letter-spacing:.05em}
+.pw-field input:focus{border-color:#e2136e}
+.pw-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#666;display:flex;align-items:center;padding:4px;transition:color .2s}
+.pw-eye:hover{color:#aaa}
+.pw-eye svg{width:18px;height:18px;fill:currentColor}
+.pw-submit{width:100%;background:#e2136e;border:none;color:#fff;border-radius:8px;padding:13px;font-size:16px;font-weight:700;cursor:pointer;transition:background .2s;font-family:inherit;margin-bottom:12px}
+.pw-submit:hover{background:#c4115e}
+.pw-submit:disabled{opacity:.5;cursor:not-allowed}
+.pw-error{font-size:13px;color:#e2136e;min-height:20px;line-height:1.4;margin-top:2px}
+.pw-hint{font-size:12px;color:#555;line-height:1.5;margin-top:8px}
 </style>
 </head>
 <body>
+
+<!-- ─── Password Gate ─── -->
+<div id="pwGate">
+  <div class="pw-box">
+    <div class="pw-logo">bK</div>
+    <h2>bKash Tax Calculator</h2>
+    <p>This tool is for authorised use only.<br>Enter the password to continue.</p>
+    <div class="pw-field">
+      <input type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')submitPw()">
+      <button class="pw-eye" onclick="togglePwVis()" title="Show/hide password">
+        <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </button>
+    </div>
+    <div class="pw-error" id="pwError"></div>
+    <button class="pw-submit" id="pwBtn" onclick="submitPw()">Unlock Calculator</button>
+    <div class="pw-hint">Contact Md Noor Hossain if you need access.</div>
+  </div>
+</div>
 
 <!-- ─── Reset Confirmation Modal ─── -->
 <div class="modal-overlay" id="resetModal">
@@ -263,6 +438,81 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
   </div>
 </div>
 
+<!-- ─── Logout Confirmation Modal ─── -->
+<div class="modal-overlay" id="logoutModal">
+  <div class="modal logout-modal">
+    <div class="modal-hdr">
+      <h2>Logout?</h2>
+      <button class="modal-close" onclick="closeLogoutModal()">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center;padding:28px 24px">
+      <div class="logout-warn-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zm-5 11a8 8 0 0 1 0-16v2a6 6 0 1 0 0 12v2z"/></svg>
+      </div>
+      <h3 style="color:#e0e0e0;font-size:16px;margin-bottom:10px">Are you sure you want to logout?</h3>
+      <p style="color:#888;font-size:13px;line-height:1.7">You will be returned to the password screen. Any unsaved data will remain in the current session.</p>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-ghost" onclick="closeLogoutModal()">Cancel</button>
+      <button class="btn-pink" onclick="confirmLogout()">Yes, Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Investment Picker Modal ─── -->
+<div class="modal-overlay" id="invPickerModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-hdr">
+      <h2>Select Investments</h2>
+      <button class="modal-close" onclick="closeInvModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:var(--t-sm);color:#888;margin-bottom:18px;line-height:1.6">Choose which investment types to include. Only selected items will appear in Investment Details.</p>
+      <div class="inv-picker-grid">
+        <div class="ioc">
+          <input type="checkbox" id="ioc_dps">
+          <label class="ioc-label" for="ioc_dps">
+            <div class="ioc-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div><div class="ioc-name">DPS</div><div class="ioc-desc">Deposit Pension Scheme</div></div>
+          </label>
+        </div>
+        <div class="ioc">
+          <input type="checkbox" id="ioc_sanch">
+          <label class="ioc-label" for="ioc_sanch">
+            <div class="ioc-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div><div class="ioc-name">Sanchaypatra</div><div class="ioc-desc">Govt savings certificate</div></div>
+          </label>
+        </div>
+        <div class="ioc">
+          <input type="checkbox" id="ioc_life">
+          <label class="ioc-label" for="ioc_life">
+            <div class="ioc-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div><div class="ioc-name">Life Insurance</div><div class="ioc-desc">Annual premium</div></div>
+          </label>
+        </div>
+        <div class="ioc">
+          <input type="checkbox" id="ioc_govSec">
+          <label class="ioc-label" for="ioc_govSec">
+            <div class="ioc-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div><div class="ioc-name">Government Securities</div><div class="ioc-desc">Treasury bonds / T-bills</div></div>
+          </label>
+        </div>
+        <div class="ioc">
+          <input type="checkbox" id="ioc_stocks">
+          <label class="ioc-label" for="ioc_stocks">
+            <div class="ioc-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div><div class="ioc-name">Share Market / Stocks</div><div class="ioc-desc">Listed securities · No specific limit · 100% eligible</div></div>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-ghost" onclick="closeInvModal()">Cancel</button>
+      <button class="btn-pink" onclick="saveInvModal()">Apply Selection</button>
+    </div>
+  </div>
+</div>
+
 <!-- ─── Config Modal ─── -->
 <div class="modal-overlay" id="configModal">
   <div class="modal">
@@ -273,31 +523,65 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
     <div class="modal-body">
       <div class="modal-section-title">Rebate Limit Control</div>
       <div class="g3">
-        <div class="field"><label>Non-taxable limit (BDT)</label><input type="text" inputmode="numeric" id="mNonTaxable" value="500,000" oninput="onNumInput(this)"></div>
+        <div class="field"><label>Tax Exemption Max Limit</label><input type="text" inputmode="numeric" id="mNonTaxable" value="500,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Max rebate % of taxable income</label><input type="number" id="mRebatePct" value="3" step="0.1"></div>
-        <div class="field"><label>Max rebate ceiling (BDT)</label><input type="text" inputmode="numeric" id="mRebateCeiling" value="10,00,000" oninput="onNumInput(this)"></div>
+        <div class="field"><label>Max rebate ceiling</label><input type="text" inputmode="numeric" id="mRebateCeiling" value="10,00,000" oninput="onNumInput(this)"></div>
       </div>
       <div class="modal-section-title">Investment Limit Control</div>
       <div class="g3">
-        <div class="field"><label>DPS max limit (BDT)</label><input type="text" inputmode="numeric" id="mDpsMax" value="1,20,000" oninput="onNumInput(this)"></div>
-        <div class="field"><label>Sanchaypatra max limit (BDT)</label><input type="text" inputmode="numeric" id="mSanchMax" value="5,00,000" oninput="onNumInput(this)"></div>
+        <div class="field"><label>DPS max limit</label><input type="text" inputmode="numeric" id="mDpsMax" value="1,20,000" oninput="onNumInput(this)"></div>
+        <div class="field"><label>Sanchaypatra max limit</label><input type="text" inputmode="numeric" id="mSanchMax" value="5,00,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Life insurance eligible % of premium</label>
           <div style="display:flex;align-items:center;gap:8px"><input type="number" id="mLifePct" value="10" step="1" style="flex:1"><span style="color:#888">%</span></div>
         </div>
       </div>
       <div class="g3" style="margin-top:12px">
+        <div class="field"><label>Government Securities max limit</label><input type="text" inputmode="numeric" id="mGovSecMax" value="5,00,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Provident fund rate (% of basic)</label>
           <div style="display:flex;align-items:center;gap:8px"><input type="number" id="mPfRate" value="10" step="1" min="0" max="100" style="flex:1"><span style="color:#888">%</span></div>
         </div>
       </div>
-      <div class="modal-section-title">Tax Slabs (BDT)</div>
-      <table class="slab-tbl">
-        <thead><tr><th style="width:145px">Label</th><th>Amount (BDT)</th><th style="width:100px">Rate</th></tr></thead>
+      <div class="modal-section-title">Tax Year &amp; Slab Configuration</div>
+      <div class="tax-year-picker">
+        <div class="tyr-option">
+          <input type="radio" name="taxYear" id="tyr2025" value="2025" onchange="onTaxYearChange('2025')" checked>
+          <label class="tyr-label" for="tyr2025">
+            <span class="tyr-year">Income Year 2025-26</span>
+            <span class="tyr-tag">Old Slab — 7 brackets (0%–30%)</span>
+          </label>
+        </div>
+        <div class="tyr-option">
+          <input type="radio" name="taxYear" id="tyr2026" value="2026" onchange="onTaxYearChange('2026')">
+          <label class="tyr-label" for="tyr2026">
+            <span class="tyr-year">Income Year 2026-27-28</span>
+            <span class="tyr-tag">New Slab — 6 brackets (0%–30%)</span>
+          </label>
+        </div>
+      </div>
+      <div class="tax-year-picker" style="margin-top:10px">
+        <div class="tyr-option">
+          <input type="radio" name="taxGender" id="tgMale" value="male" onchange="onGenderChange('male')" checked>
+          <label class="tyr-label" for="tgMale">
+            <span class="tyr-year">Male</span>
+            <span class="tyr-tag">Standard exemption limit</span>
+          </label>
+        </div>
+        <div class="tyr-option">
+          <input type="radio" name="taxGender" id="tgFemale" value="female" onchange="onGenderChange('female')">
+          <label class="tyr-label" for="tgFemale">
+            <span class="tyr-year">Female</span>
+            <span class="tyr-tag">+৳50,000 on first slab</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="tbl-scroll" style="margin-top:4px"><table class="slab-tbl">
+        <thead><tr><th style="width:145px">Label</th><th>Amount</th><th style="width:100px">Rate</th></tr></thead>
         <tbody id="modalSlabBody"></tbody>
-      </table>
+      </table></div>
     </div>
     <div class="modal-ftr">
-      <button class="btn-ghost" onclick="resetModalSlabs()">↺ Reset slabs</button>
+      <button class="btn-ghost" onclick="resetModalSlabs()">↺ Reset to preset</button>
       <button class="btn-pink" onclick="saveModal()">Save configuration</button>
     </div>
   </div>
@@ -308,16 +592,33 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
   <div class="logo">bK</div>
   <div class="header-text">
     <h1>bKash Tax Calculator</h1>
-    <p>Made by Md Noor Hossain using AI</p>
+    <p>Made by Md Noor Hossain</p>
   </div>
   <div class="header-actions">
     <button class="reset-btn" id="resetBtn" disabled onclick="openResetModal()">
       <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-      Reset Values
+      <span class="btn-txt">Reset Values</span>
     </button>
     <button class="cfg-btn" onclick="openModal()" title="Configuration">
       <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
     </button>
+    <!-- Hamburger (mobile only) -->
+    <div style="position:relative">
+      <button class="ham-btn" id="hamBtn" onclick="toggleHamMenu()" title="Menu">
+        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div class="ham-menu" id="hamMenu">
+        <button class="ham-item" onclick="closeHamMenu();openModal()">
+          <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+          Configuration
+        </button>
+        <div class="ham-divider"></div>
+        <button class="ham-item danger" onclick="closeHamMenu();openLogoutModal()">
+          <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zm-5 11a8 8 0 0 1 0-16v2a6 6 0 1 0 0 12v2z"/></svg>
+          Logout
+        </button>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -413,22 +714,20 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
       </div>
 
       <div class="sub-title">Allowances &amp; Bonuses</div>
-      <p style="font-size:11px;color:#666;margin-bottom:12px">Leave fare assistance equals 1 month of your previous year's basic salary.</p>
       <div class="fest-row">
         <div style="min-width:160px">
           <div class="fest-lbl">Leave Fare Assistance</div>
           <div class="fest-source">
-            <label><input type="radio" name="lfaMode" value="auto" checked onchange="onLfaChange()"><span>Auto ÷12</span></label>
+            <label><input type="radio" name="lfaMode" value="auto" checked onchange="onLfaChange()"><span>Annual</span></label>
             <label><input type="radio" name="lfaMode" value="manual" onchange="onLfaChange()"><span>Manual</span></label>
           </div>
         </div>
         <div class="fest-val-wrap" id="lfaBasicWrap">
-          <label>Previous year annual basic (BDT)</label>
+          <label>Previous year's annual basic</label>
           <input type="text" inputmode="numeric" id="lfaPrevBasic" value="0" oninput="onNumInput(this);syncLfaAuto();calc()">
-          <span class="field-note">You will receive 1 month = annual ÷ 12</span>
         </div>
         <div class="fest-val-wrap">
-          <label id="lfaHint">LFA amount (auto: prev basic ÷ 12)</label>
+          <label id="lfaHint">LFA (1 month = annual ÷ 12)</label>
           <input type="text" inputmode="numeric" id="lfa" value="0" readonly oninput="onNumInput(this);calc()">
         </div>
       </div>
@@ -464,7 +763,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
       <div class="suggest-header">
         <div class="suggest-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
         <div>
-          <div class="suggest-title">Investment Optimization Suggestion</div>
+          <div class="suggest-title">Investment Suggestion</div>
           <div class="suggest-subtitle">How much more to invest to maximize your tax rebate</div>
         </div>
       </div>
@@ -480,69 +779,75 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 
     <!-- Investment Details -->
     <div class="card">
-      <div class="sec-title">Investment Details</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div class="sec-title" style="margin:0">Investment Details</div>
+        <button class="btn-add-inv" onclick="openInvModal()">
+          <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Add Investment
+        </button>
+      </div>
+
+      <!-- Empty state -->
+      <div class="inv-empty" id="invEmptyState">
+        <span style="font-size:32px;line-height:1;display:block;margin-bottom:8px">৳</span>
+        No investments added yet. Click <strong>Add Investment</strong> to get started.
+      </div>
 
       <!-- DPS -->
-      <div class="inv-row">
-        <div class="inv-row-header" id="dpsHeader">
-          <div class="inv-row-label">DPS (Deposit Pension Scheme)</div>
-          <label class="toggle-wrap" style="gap:6px">
-            <span class="toggle"><input type="checkbox" id="chkDps" onchange="toggleInvSection('dps');calc()"><span class="slider"></span></span>
-            <span style="font-size:11px;color:#666">Enable</span>
-          </label>
-        </div>
-        <div id="dpsFields" style="display:none">
-          <div class="inv-row-fields" style="margin-top:12px">
-            <div class="field"><label>Amount (BDT)</label><input type="text" inputmode="numeric" id="invDps" value="0" oninput="onNumInput(this);calc()"></div>
-            <div class="field"><label>Max limit (configured)</label><input type="text" id="invDpsMaxDisplay" readonly tabindex="-1"></div>
-            <div class="field"><label>Eligible amount (auto)</label><input type="text" id="invDpsElig" readonly tabindex="-1"></div>
-          </div>
+      <div class="inv-row" id="invRow_dps" style="display:none">
+        <div class="inv-row-header open"><div class="inv-row-label">DPS (Deposit Pension Scheme)</div><button class="inv-row-remove" onclick="removeInv('dps')" title="Remove"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+        <div class="inv-row-fields">
+          <div class="field"><label>Amount</label><input type="text" inputmode="numeric" id="invDps" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="field"><label>Max limit</label><input type="text" id="invDpsMaxDisplay" readonly tabindex="-1"></div>
+          <div class="field"><label>Eligible amount (auto)</label><input type="text" id="invDpsElig" readonly tabindex="-1"></div>
         </div>
       </div>
 
       <!-- Sanchaypatra -->
-      <div class="inv-row">
-        <div class="inv-row-header" id="sanchHeader">
-          <div class="inv-row-label">Sanchaypatra</div>
-          <label class="toggle-wrap" style="gap:6px">
-            <span class="toggle"><input type="checkbox" id="chkSanch" onchange="toggleInvSection('sanch');calc()"><span class="slider"></span></span>
-            <span style="font-size:11px;color:#666">Enable</span>
-          </label>
-        </div>
-        <div id="sanchFields" style="display:none">
-          <div class="inv-row-fields" style="margin-top:12px">
-            <div class="field"><label>Amount (BDT)</label><input type="text" inputmode="numeric" id="invSanch" value="0" oninput="onNumInput(this);calc()"></div>
-            <div class="field"><label>Max limit (configured)</label><input type="text" id="invSanchMaxDisplay" readonly tabindex="-1"></div>
-            <div class="field"><label>Eligible amount (auto)</label><input type="text" id="invSanchElig" readonly tabindex="-1"></div>
-          </div>
+      <div class="inv-row" id="invRow_sanch" style="display:none">
+        <div class="inv-row-header open"><div class="inv-row-label">Sanchaypatra</div><button class="inv-row-remove" onclick="removeInv('sanch')" title="Remove"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+        <div class="inv-row-fields">
+          <div class="field"><label>Amount</label><input type="text" inputmode="numeric" id="invSanch" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="field"><label>Max limit</label><input type="text" id="invSanchMaxDisplay" readonly tabindex="-1"></div>
+          <div class="field"><label>Eligible amount (auto)</label><input type="text" id="invSanchElig" readonly tabindex="-1"></div>
         </div>
       </div>
 
       <!-- Life Insurance -->
-      <div class="inv-row">
-        <div class="inv-row-header" id="lifeHeader">
-          <div class="inv-row-label">Life Insurance</div>
-          <label class="toggle-wrap" style="gap:6px">
-            <span class="toggle"><input type="checkbox" id="chkLife" onchange="toggleInvSection('life');calc()"><span class="slider"></span></span>
-            <span style="font-size:11px;color:#666">Enable</span>
-          </label>
-        </div>
-        <div id="lifeFields" style="display:none">
-          <div class="inv-row-fields" style="margin-top:12px">
-            <div class="field"><label>Annual premium (BDT)</label><input type="text" inputmode="numeric" id="invLife" value="0" oninput="onNumInput(this);calc()"></div>
-            <div class="field"><label>Eligible % (configured)</label><input type="text" id="invLifePctDisplay" readonly tabindex="-1"><span class="field-note">Configure % in settings ⚙️</span></div>
-            <div class="field"><label>Eligible amount (auto)</label><input type="text" id="invLifeElig" readonly tabindex="-1"></div>
-          </div>
+      <div class="inv-row" id="invRow_life" style="display:none">
+        <div class="inv-row-header open"><div class="inv-row-label">Life Insurance</div><button class="inv-row-remove" onclick="removeInv('life')" title="Remove"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+        <div class="inv-row-fields">
+          <div class="field"><label>Annual premium</label><input type="text" inputmode="numeric" id="invLife" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="field"><label>Eligible %</label><input type="text" id="invLifePctDisplay" readonly tabindex="-1"><span class="field-note">Configure % in settings ⚙️</span></div>
+          <div class="field"><label>Eligible amount (auto)</label><input type="text" id="invLifeElig" readonly tabindex="-1"></div>
         </div>
       </div>
 
-      <!-- PF (always shown, auto) -->
-      <div class="inv-row">
-        <div class="inv-row-header open"><div class="inv-row-label">Provident Fund (auto-calculated)</div></div>
+      <!-- Government Securities -->
+      <div class="inv-row" id="invRow_govSec" style="display:none">
+        <div class="inv-row-header open"><div class="inv-row-label">Government Securities</div><button class="inv-row-remove" onclick="removeInv('govSec')" title="Remove"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
         <div class="inv-row-fields">
-          <div class="field"><label>Before increment PF – Employer + Employee (auto)</label><input type="text" id="pfBeforeDisplay" readonly tabindex="-1"></div>
-          <div class="field"><label>After increment PF – Employer + Employee (auto)</label><input type="text" id="pfAfterDisplay" readonly tabindex="-1"></div>
-          <div class="field"><label>PF contribution – both sides (auto)</label><input type="text" id="invPfBoth" readonly tabindex="-1"><span class="field-note">Before + After (Employer + Employee). Full amount eligible.</span></div>
+          <div class="field"><label>Amount</label><input type="text" inputmode="numeric" id="invGovSec" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="field"><label>Max limit</label><input type="text" id="invGovSecMaxDisplay" readonly tabindex="-1"></div>
+          <div class="field"><label>Eligible amount (auto)</label><input type="text" id="invGovSecElig" readonly tabindex="-1"></div>
+        </div>
+      </div>
+
+      <!-- Share Market / Stocks -->
+      <div class="inv-row" id="invRow_stocks" style="display:none">
+        <div class="inv-row-header open"><div class="inv-row-label">Share Market / Stocks</div><button class="inv-row-remove" onclick="removeInv('stocks')" title="Remove"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+        <div class="inv-row-fields">
+          <div class="field"><label>Amount</label><input type="text" inputmode="numeric" id="invStocks" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="field"><label>Limit</label><input type="text" value="No Specific Limit" readonly tabindex="-1" style="color:#888;font-size:13px"></div>
+          <div class="field"><label>Eligible amount (100% of input)</label><input type="text" id="invStocksElig" readonly tabindex="-1"></div>
+        </div>
+      </div>
+
+      <!-- PF (auto, hidden when zero) -->
+      <div class="inv-row" id="pfRow" style="display:none">
+        <div class="inv-row-header open"><div class="inv-row-label">Provident Fund</div></div>
+        <div class="inv-row-fields" style="grid-template-columns:1fr">
+          <div class="field"><label>PF contribution</label><input type="text" id="invPfBoth" readonly tabindex="-1"><span class="field-note">Before + After (Employer + Employee). Full amount eligible.</span></div>
         </div>
       </div>
     </div>
@@ -555,7 +860,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
         <div class="sum-item"><div class="lbl">Investment Rebate (×15%)</div><div class="val val-grn" id="r_investRebate">৳0</div></div>
         <div class="sum-item"><div class="lbl">Applicable Rebate</div><div class="val val-grn" id="r_rebateAmt">৳0</div></div>
       </div>
-      <table class="settle-tbl" id="rebateDetails" style="margin-top:0"></table>
+      <div class="tbl-scroll"><table class="settle-tbl" id="rebateDetails" style="margin-top:0"></table></div>
     </div>
   </div>
 
@@ -583,8 +888,8 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 
       <div class="sub-title">Others Deduction</div>
       <div class="g2">
-        <div class="field"><label>Profit share tax deducted by office (BDT)</label><input type="text" inputmode="numeric" id="profitTaxAmt" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="field"><label>Performance bonus tax deduction (BDT)</label><input type="text" inputmode="numeric" id="perfBonusTax" value="0" oninput="onNumInput(this);calc()"></div>
+        <div class="field"><label>Profit share tax deducted by office</label><input type="text" inputmode="numeric" id="profitTaxAmt" value="0" oninput="onNumInput(this);calc()"></div>
+        <div class="field"><label>Performance bonus tax deduction</label><input type="text" inputmode="numeric" id="perfBonusTax" value="0" oninput="onNumInput(this);calc()"></div>
       </div>
 
       <div class="sub-title">Additional Office Deductions</div>
@@ -621,18 +926,18 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
                 <option value="30000">Microbus — ৳30,000</option>
               </select>
             </div>
-            <div class="field"><label>Car AIT amount (BDT)</label><input type="text" id="carAITAmt" value="0" readonly tabindex="-1"></div>
+            <div class="field"><label>Car AIT amount</label><input type="text" id="carAITAmt" value="0" readonly tabindex="-1"></div>
           </div>
         </div>
       </div>
       <div class="mt14">
         <label class="toggle-wrap">
           <span class="toggle"><input type="checkbox" id="chkInvTDS" onchange="toggleInvTDS();calc()"><span class="slider"></span></span>
-          <span class="toggle-label">Investment TDS</span>
+          <span class="toggle-label">Investment Tax Deduction</span>
         </label>
         <div id="invTDSSection" style="display:none;margin-top:12px">
           <div class="g2">
-            <div class="field"><label>Investment TDS amount (BDT)</label><input type="text" inputmode="numeric" id="invTDSAmt" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field"><label>Amount</label><input type="text" inputmode="numeric" id="invTDSAmt" value="0" oninput="onNumInput(this);calc()"></div>
           </div>
         </div>
       </div>
@@ -644,10 +949,10 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 
     <div class="card">
       <div class="sec-title">Tax Slab Breakdown</div>
-      <table class="brk-tbl">
+      <div class="tbl-scroll"><table class="brk-tbl">
         <thead><tr><th>Slab</th><th>Slab limit</th><th>Rate</th><th>Applied amount</th><th>Tax</th></tr></thead>
         <tbody id="brkBody"></tbody>
-      </table>
+      </table></div>
     </div>
 
     <div class="card">
@@ -660,20 +965,125 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
         <div class="sum-item"><div class="lbl">Tax Payable</div><div class="val val-red" id="sTaxPayable">৳0</div></div>
       </div>
       <div class="sub-title">Final Settlement</div>
-      <table class="settle-tbl"><tbody id="settleTblBody"></tbody></table>
+      <div class="tbl-scroll"><table class="settle-tbl"><tbody id="settleTblBody"></tbody></table></div>
       <button class="btn-export" onclick="exportExcel()">
         <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM8 16l2-3-2-3h1.5l1.25 2L12 10h1.5l-2 3 2 3H12l-1.25-2L9.5 16H8zm5 2h3v-1.5h-3V18zm0-3h3v-1.5h-3V15z"/></svg>
         Export to Excel
       </button>
     </div>
+
+    <!-- Next Year Tax Impact (only visible for 2025-26 slab) -->
+    <div class="impact-card" id="nextYearImpactCard" style="display:none">
+      <div class="impact-hdr">
+        <div class="impact-icon">
+          <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+        </div>
+        <div>
+          <div class="impact-title">Next Year Tax Impact — 2026-27 Projection</div>
+          <div class="impact-subtitle">Based on the new slab structure effective from Income Year 2026-27. Same income &amp; deductions assumed.</div>
+        </div>
+      </div>
+      <div class="impact-grid">
+        <div class="impact-item">
+          <div class="i-lbl">This Year Tax (2025-26)</div>
+          <div class="i-val i-neutral" id="imp_currentTax">৳0</div>
+        </div>
+        <div class="impact-item">
+          <div class="i-lbl">Next Year Tax (2026-27)</div>
+          <div class="i-val i-up" id="imp_nextTax">৳0</div>
+        </div>
+        <div class="impact-item">
+          <div class="i-lbl">Increase Amount</div>
+          <div class="i-val i-up" id="imp_increaseAmt">৳0</div>
+        </div>
+        <div class="impact-item">
+          <div class="i-lbl">Increase</div>
+          <div class="i-pct" id="imp_increasePct">0%</div>
+        </div>
+      </div>
+      <div class="impact-note" id="imp_note">Enter salary details to see next year projection.</div>
+    </div>
   </div>
 </div>
 
 <script>
+// ─── Password Gate ────────────────────────────────────────────────────────────
+// Default password: bKash@2025
+// To change: update _PH  →  SHA-256 hash of new password (https://emn178.github.io/online-tools/sha256.html)
+//            update _PB  →  btoa('newpassword') run in browser console
+const _PH = 'fd02e5add2f0b0acc37a969d9b1e19008eaae0268379b582816ff950021d00bd';
+const _PB = 'Ykthc2hAMjAyNQ=='; // base64 fallback for file:// context
+
+function _gel(id){ return document.getElementById(id); }
+
+async function _check(s){
+  try{
+    const buf=await window.crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')===_PH;
+  }catch(e){
+    // fallback for file:// or older browsers — use base64 comparison
+    try{ return btoa(unescape(encodeURIComponent(s)))===_PB; }catch(e2){ return false; }
+  }
+}
+
+async function submitPw(){
+  const inp=_gel('pwInput'),btn=_gel('pwBtn'),err=_gel('pwError');
+  const val=inp.value.trim();
+  if(!val){err.textContent='Please enter the password.';return;}
+  btn.disabled=true;btn.textContent='Checking…';err.textContent='';
+  const ok=await _check(val);
+  if(ok){
+    sessionStorage.setItem('_bkauth','1');
+    _gel('pwGate').style.display='none';
+  } else {
+    err.textContent='Incorrect password. Please try again.';
+    inp.value='';inp.focus();
+  }
+  btn.disabled=false;btn.textContent='Unlock Calculator';
+}
+function togglePwVis(){
+  const inp=_gel('pwInput');
+  inp.type=inp.type==='password'?'text':'password';
+}
+// Run immediately — no dependency on $ helper
+(function initGate(){
+  if(sessionStorage.getItem('_bkauth')==='1'){
+    _gel('pwGate').style.display='none';
+  } else {
+    document.addEventListener('DOMContentLoaded',function(){
+      var inp=_gel('pwInput'); if(inp) inp.focus();
+    });
+  }
+})();
+
 // ─── Config ───────────────────────────────────────────────────────────────────
-let config={nonTaxable:500000,rebatePct:3,rebateCeiling:1000000,dpsMax:120000,sanchMax:500000,lifePct:10,pfRate:10};
-const ORIGINAL_SLABS=[{limit:350000,rate:0},{limit:100000,rate:5},{limit:400000,rate:10},{limit:500000,rate:15},{limit:500000,rate:20},{limit:2000000,rate:25},{limit:Infinity,rate:30}];
-let slabs=ORIGINAL_SLABS.map(s=>({...s}));
+let config={nonTaxable:500000,rebatePct:3,rebateCeiling:1000000,dpsMax:120000,sanchMax:500000,lifePct:10,pfRate:10,govSecMax:500000,taxYear:'2025',gender:'male'};
+// Which investment rows are visible
+let invEnabled={dps:false,sanch:false,life:false,govSec:false,stocks:false};
+
+const SLAB_PRESETS={
+  '2025':[
+    {limit:350000, rate:0},  {limit:100000, rate:5},
+    {limit:400000, rate:10}, {limit:500000, rate:15},
+    {limit:500000, rate:20}, {limit:2000000,rate:25},
+    {limit:Infinity,rate:30}
+  ],
+  '2026':[
+    {limit:375000, rate:0},  {limit:300000, rate:10},
+    {limit:400000, rate:15}, {limit:500000, rate:20},
+    {limit:2000000,rate:25}, {limit:Infinity,rate:30}
+  ]
+};
+const ORIGINAL_SLABS=SLAB_PRESETS['2025']; // kept for legacy reference
+// Returns a gender-adjusted copy of a preset: female gets +50,000 on the first (0%) slab
+function getEffectiveSlabs(year,gender){
+  return SLAB_PRESETS[year].map((s,i)=>
+    i===0&&gender==='female'&&isFinite(s.limit)
+      ?{...s,limit:s.limit+50000}
+      :{...s}
+  );
+}
+let slabs=getEffectiveSlabs('2025','male');
 const B_MONTHS=9,A_MONTHS=3;
 
 // ─── Dirty / Reset ────────────────────────────────────────────────────────────
@@ -682,9 +1092,30 @@ function markDirty(){if(_dirty)return;_dirty=true;$('resetBtn').disabled=false;}
 function openResetModal(){$('resetModal').classList.add('open');document.body.style.overflow='hidden';}
 function closeResetModal(){$('resetModal').classList.remove('open');document.body.style.overflow='';}
 function confirmReset(){closeResetModal();doReset();}
+
+// ── Hamburger menu ──
+function toggleHamMenu(){const m=$('hamMenu');m.classList.toggle('open');}
+function closeHamMenu(){$('hamMenu').classList.remove('open');}
+document.addEventListener('click',function(e){
+  const btn=$('hamBtn'),menu=$('hamMenu');
+  if(btn&&menu&&!btn.contains(e.target)&&!menu.contains(e.target))closeHamMenu();
+});
+
+// ── Logout ──
+function openLogoutModal(){$('logoutModal').classList.add('open');document.body.style.overflow='hidden';}
+function closeLogoutModal(){$('logoutModal').classList.remove('open');document.body.style.overflow='';}
+function confirmLogout(){
+  sessionStorage.removeItem('_bkauth');
+  closeLogoutModal();
+  _gel('pwGate').style.display='flex';
+  _gel('pwInput').value='';
+  _gel('pwError').textContent='';
+  _gel('pwInput').focus();
+}
 function doReset(){
   const ids=['bBasic','bHra','bMedical','bConveyance','aBasic','aHra','aMedical','aConveyance',
-    'lfa','lfaPrevBasic','annualPerf','profitShare','invDps','invSanch','invLife',
+    'lfa','lfaPrevBasic','annualPerf','profitShare',
+    'invDps','invSanch','invLife','invGovSec','invStocks',
     'mJul','mAug','mSep','mOct','mNov','mDec','mJan','mFeb','mMar','mApr','mMay','mJun',
     'profitTaxAmt','perfBonusTax','invTDSAmt'];
   ids.forEach(id=>{const el=$(id);if(el)el.value='0';});
@@ -692,7 +1123,9 @@ function doReset(){
   document.querySelector('input[name="fest2"][value="after"]').checked=true;
   document.querySelector('input[name="lfaMode"][value="auto"]').checked=true;
   onFestChange(1);onFestChange(2);onLfaChange();
-  ['dps','sanch','life'].forEach(k=>{$('chk'+k[0].toUpperCase()+k.slice(1)).checked=false;toggleInvSection(k);});
+  // Hide all investment rows
+  Object.keys(invEnabled).forEach(k=>{invEnabled[k]=false;applyInvRow(k);});
+  updateInvEmptyState();
   $('chkCarAIT').checked=false;toggleCarAIT();
   $('chkInvTDS').checked=false;toggleInvTDS();
   additionalDeds=[];renderDeds();
@@ -766,7 +1199,12 @@ function openModal(){
   setVal('mDpsMax',config.dpsMax);
   setVal('mSanchMax',config.sanchMax);
   $('mLifePct').value=config.lifePct;
+  setVal('mGovSecMax',config.govSecMax);
   $('mPfRate').value=config.pfRate;
+  const tyrEl=$('tyr'+config.taxYear);
+  if(tyrEl)tyrEl.checked=true;
+  const tgEl=$('tg'+config.gender.charAt(0).toUpperCase()+config.gender.slice(1));
+  if(tgEl)tgEl.checked=true;
   renderModalSlabs();
   $('configModal').classList.add('open');
   document.body.style.overflow='hidden';
@@ -779,35 +1217,67 @@ function saveModal(){
   config.dpsMax       =v('mDpsMax');
   config.sanchMax     =v('mSanchMax');
   config.lifePct      =+$('mLifePct').value||0;
+  config.govSecMax    =v('mGovSecMax');
   config.pfRate       =+$('mPfRate').value||0;
-  slabs.forEach((s,i)=>{
-    if(isFinite(s.limit)){const el=$('mSlabLimit'+i);if(el)s.limit=+el.value||0;}
-    const re=$('mSlabRate'+i);if(re)s.rate=+re.value||0;
+  // Save selected tax year, gender and read slab values from table
+  const tyrSel=document.querySelector('input[name="taxYear"]:checked');
+  config.taxYear=tyrSel?tyrSel.value:'2025';
+  const tgSel=document.querySelector('input[name="taxGender"]:checked');
+  config.gender=tgSel?tgSel.value:'male';
+  // Rebuild slabs from gender-adjusted preset + any manual overrides in table
+  const preset=getEffectiveSlabs(config.taxYear,config.gender);
+  slabs=preset.map((s,i)=>{
+    const limEl=$('mSlabLimit'+i);
+    const rateEl=$('mSlabRate'+i);
+    return{
+      limit: isFinite(s.limit)?(limEl?+limEl.value||s.limit:s.limit):Infinity,
+      rate:  rateEl?+rateEl.value||0:s.rate
+    };
   });
   closeModal();calc();
 }
 $('configModal').addEventListener('click',e=>{if(e.target===$('configModal'))closeModal();});
 $('resetModal').addEventListener('click',e=>{if(e.target===$('resetModal'))closeResetModal();});
+$('logoutModal').addEventListener('click',e=>{if(e.target===$('logoutModal'))closeLogoutModal();});
+
+// Helpers to read currently selected year/gender from modal
+function _modalYear(){const s=document.querySelector('input[name="taxYear"]:checked');return s?s.value:config.taxYear;}
+function _modalGender(){const s=document.querySelector('input[name="taxGender"]:checked');return s?s.value:config.gender;}
+
+// Called when user clicks a tax year radio — reloads slab table with preset values
+function onTaxYearChange(year){
+  const prev=slabs;
+  slabs=getEffectiveSlabs(year,_modalGender());
+  renderModalSlabs();
+  slabs=prev; // restore — only truly applied on Save
+}
+// Called when user clicks a gender radio — reloads slab table
+function onGenderChange(gender){
+  const prev=slabs;
+  slabs=getEffectiveSlabs(_modalYear(),gender);
+  renderModalSlabs();
+  slabs=prev;
+}
 
 function renderModalSlabs(){
+  const renderSlabs=getEffectiveSlabs(_modalYear(),_modalGender());
   const tb=$('modalSlabBody');tb.innerHTML='';
-  slabs.forEach((s,i)=>{
+  renderSlabs.forEach((s,i)=>{
     const tr=document.createElement('tr');
     const lc=!isFinite(s.limit)
       ?`<td><input id="mSlabLimit${i}" value="∞" readonly style="width:110px"></td>`
       :`<td><input id="mSlabLimit${i}" type="number" value="${s.limit}" style="width:110px"
-          oninput="$('mSlabLbl${i}').textContent=getDynLabel(${i},+this.value||0)"></td>`;
+          oninput="document.getElementById('mSlabLbl${i}').textContent=getDynLabel(${i},+this.value||0)"></td>`;
     tr.innerHTML=`<td><span class="slab-dyn" id="mSlabLbl${i}">${getDynLabel(i,s.limit)}</span></td>${lc}
       <td><div class="rate-wrap"><input id="mSlabRate${i}" type="number" value="${s.rate}" min="0" max="100" step="1" style="width:55px"><span>%</span></div></td>`;
     tb.appendChild(tr);
   });
 }
 function resetModalSlabs(){
-  ORIGINAL_SLABS.forEach((orig,i)=>{
-    if(isFinite(orig.limit)){const el=$('mSlabLimit'+i);if(el)el.value=orig.limit;}
-    const re=$('mSlabRate'+i);if(re)re.value=orig.rate;
-    const lb=$('mSlabLbl'+i);if(lb)lb.textContent=getDynLabel(i,orig.limit);
-  });
+  const prev=slabs;
+  slabs=getEffectiveSlabs(_modalYear(),_modalGender());
+  renderModalSlabs();
+  slabs=prev;
 }
 
 // ─── Festival bonus ───────────────────────────────────────────────────────────
@@ -836,12 +1306,12 @@ function onLfaChange(){
   if(mode==='auto'){
     wrap.style.display='flex';wrap.style.flexDirection='column';
     lfaInp.readOnly=true;
-    hint.textContent='LFA amount (auto: prev basic ÷ 12)';
+    hint.textContent='LFA (1 month = annual ÷ 12)';
     syncLfaAuto();
   } else {
     wrap.style.display='none';
     lfaInp.readOnly=false;
-    hint.textContent='LFA amount (manual entry)';
+    hint.textContent='LFA amount';
   }
   calc();
 }
@@ -850,15 +1320,49 @@ function syncLfaAuto(){
   if(mode==='auto')setVal('lfa',Math.round(v('lfaPrevBasic')/12));
 }
 
-// ─── Investment section toggles ───────────────────────────────────────────────
-function toggleInvSection(key){
-  const map={dps:'chkDps',sanch:'chkSanch',life:'chkLife'};
-  const fieldMap={dps:'dpsFields',sanch:'sanchFields',life:'lifeFields'};
-  const hdrMap={dps:'dpsHeader',sanch:'sanchHeader',life:'lifeHeader'};
-  const checked=$(map[key]).checked;
-  $(fieldMap[key]).style.display=checked?'block':'none';
-  $(hdrMap[key]).classList.toggle('open',checked);
+// ─── Investment picker modal ──────────────────────────────────────────────────
+function openInvModal(){
+  // Sync checkboxes with current state
+  Object.keys(invEnabled).forEach(k=>{
+    const el=$('ioc_'+k);if(el)el.checked=invEnabled[k];
+  });
+  $('invPickerModal').classList.add('open');
+  document.body.style.overflow='hidden';
 }
+function closeInvModal(){
+  $('invPickerModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function saveInvModal(){
+  Object.keys(invEnabled).forEach(k=>{
+    const el=$('ioc_'+k);
+    if(el){invEnabled[k]=el.checked;applyInvRow(k);}
+  });
+  updateInvEmptyState();
+  closeInvModal();
+  calc();
+}
+function removeInv(key){
+  invEnabled[key]=false;
+  applyInvRow(key);
+  updateInvEmptyState();
+  calc();
+}
+function applyInvRow(key){
+  const row=$('invRow_'+key);
+  if(row)row.style.display=invEnabled[key]?'block':'none';
+  // Zero out the input when hiding
+  if(!invEnabled[key]){
+    const inp=$('inv'+key.charAt(0).toUpperCase()+key.slice(1));
+    if(inp)inp.value='0';
+  }
+}
+function updateInvEmptyState(){
+  const anyOn=Object.values(invEnabled).some(Boolean);
+  const hasPf=v('invPfBoth')>0;
+  $('invEmptyState').style.display=(anyOn||hasPf)?'none':'block';
+}
+$('invPickerModal').addEventListener('click',e=>{if(e.target===$('invPickerModal'))closeInvModal();});
 
 // ─── Car AIT ─────────────────────────────────────────────────────────────────
 function toggleCarAIT(){
@@ -932,35 +1436,40 @@ function calc(){
   const nonTaxable=Math.min(totalIncome/3,config.nonTaxable);
   const taxableIncome=Math.max(0,totalIncome-nonTaxable);
 
-  // Investment (only if toggle enabled)
-  const dpsEnabled=$('chkDps').checked;
-  const sanchEnabled=$('chkSanch').checked;
-  const lifeEnabled=$('chkLife').checked;
-
-  const dpsElig  =dpsEnabled  ?Math.min(v('invDps'),config.dpsMax):0;
-  const sanchElig=sanchEnabled?Math.min(v('invSanch'),config.sanchMax):0;
-  const lifeElig =lifeEnabled ?v('invLife')*config.lifePct/100:0;
+  // Investment (only if enabled via investment picker)
+  const dpsElig    = invEnabled.dps    ? Math.min(v('invDps'),    config.dpsMax)    : 0;
+  const sanchElig  = invEnabled.sanch  ? Math.min(v('invSanch'),  config.sanchMax)  : 0;
+  const lifeElig   = invEnabled.life   ? v('invLife')*config.lifePct/100            : 0;
+  const govSecElig = invEnabled.govSec ? Math.min(v('invGovSec'), config.govSecMax) : 0;
+  const stocksElig = invEnabled.stocks ? v('invStocks')                              : 0;
 
   // PF both sides = (employer+employee) × 2 per side
   const bPfBoth=bPfEmp*2,aPfBoth=aPfEmp*2,pfBothSides=bPfBoth+aPfBoth;
 
-  if(dpsEnabled){
+  if(invEnabled.dps){
     setVal('invDpsMaxDisplay',config.dpsMax);
     setVal('invDpsElig',dpsElig);
   }
-  if(sanchEnabled){
+  if(invEnabled.sanch){
     setVal('invSanchMaxDisplay',config.sanchMax);
     setVal('invSanchElig',sanchElig);
   }
-  if(lifeEnabled){
+  if(invEnabled.life){
     $('invLifePctDisplay').value=config.lifePct;
     setVal('invLifeElig',lifeElig);
   }
-  setVal('pfBeforeDisplay',bPfBoth);
-  setVal('pfAfterDisplay',aPfBoth);
+  if(invEnabled.govSec){
+    setVal('invGovSecMaxDisplay',config.govSecMax);
+    setVal('invGovSecElig',govSecElig);
+  }
+  if(invEnabled.stocks){
+    setVal('invStocksElig',stocksElig);
+  }
   setVal('invPfBoth',pfBothSides);
+  $('pfRow').style.display=pfBothSides>0?'block':'none';
+  updateInvEmptyState();
 
-  const totalInvest=dpsElig+sanchElig+lifeElig+pfBothSides;
+  const totalInvest=dpsElig+sanchElig+lifeElig+govSecElig+stocksElig+pfBothSides;
 
   const maxRebatable=taxableIncome*config.rebatePct/100;
   const investRebate=totalInvest*0.15;
@@ -992,21 +1501,27 @@ function calc(){
   $('additionalSectionTotal').textContent=fmt(addSectionTot);
 
   const totalDed=officeSectionTot+addSectionTot;
-  const taxPayable=Math.max(0,netTax-totalDed);
+
+  // Minimum tax rule: floor applies to net liability (after rebate), BEFORE deductions already paid
+  const MIN_TAX=5000;
+  const minTaxApplies=grossTax>0&&netTax<MIN_TAX;
+  const effectiveNetTax=minTaxApplies?MIN_TAX:netTax;
+  // Deductions already paid reduce what remains to pay
+  const finalTaxPayable=Math.max(0,effectiveNetTax-totalDed);
 
   // Stats bar
   $('stTotalSalary').textContent  =fmt(totalIncome);
   $('stTaxableSalary').textContent=fmt(taxableIncome);
   $('stNonTaxable').textContent   =fmt(nonTaxable);
   $('stTaxPaid').textContent      =fmt(totalDed);
-  $('stTaxDue').textContent       =fmt(taxPayable);
+  $('stTaxDue').textContent       =fmt(finalTaxPayable);
 
   // Summary
   $('sTaxable').textContent   =fmt(taxableIncome);
   $('sGross').textContent     =fmt(grossTax);
   $('sTotalPaid').textContent =fmt(totalDed);
   $('sRebate').textContent    =fmt(rebateAmt);
-  $('sTaxPayable').textContent=fmt(taxPayable);
+  $('sTaxPayable').textContent=fmt(finalTaxPayable);
 
   // Slab breakdown
   const tb=$('brkBody');tb.innerHTML='';
@@ -1041,21 +1556,56 @@ function calc(){
   const profitRow=profitTaxDed>0?`<tr><td>Profit share tax deduction</td><td class="c-grn">− ${fmt(profitTaxDed)}</td></tr>`:'';
   const perfRow=perfBonusTaxDed>0?`<tr><td>Performance bonus tax deduction</td><td class="c-grn">− ${fmt(perfBonusTaxDed)}</td></tr>`:'';
   const carRow=carAIT>0?`<tr><td>Car AIT deduction</td><td class="c-grn">− ${fmt(carAIT)}</td></tr>`:'';
-  const tdsRow=invTDS>0?`<tr><td>Investment TDS</td><td class="c-grn">− ${fmt(invTDS)}</td></tr>`:'';
+  const tdsRow=invTDS>0?`<tr><td>Investment Tax Deduction</td><td class="c-grn">− ${fmt(invTDS)}</td></tr>`:'';
 
+  const minTaxRow=minTaxApplies?`
+    <tr class="section-hdr"><td colspan="2">Minimum Tax</td></tr>
+    <tr><td>Calculated net tax liability</td><td class="c-muted">${fmt(netTax)}</td></tr>
+    <tr><td>Minimum tax applicable</td><td class="c-red">৳5,000</td></tr>`:''
   $('settleTblBody').innerHTML=`
     <tr class="section-hdr"><td colspan="2">Tax Calculation</td></tr>
     <tr><td>Gross Tax (from slabs)</td><td class="c-red">${fmt(grossTax)}</td></tr>
     <tr><td>Investment Rebate</td><td class="c-yel">− ${fmt(rebateAmt)}</td></tr>
     <tr class="subtotal"><td>Net Tax Liability</td><td>${fmt(netTax)}</td></tr>
-    <tr class="section-hdr"><td colspan="2">Deductions Already Paid</td></tr>
+    ${totalDed>0?`<tr class="section-hdr"><td colspan="2">Deductions Already Paid</td></tr>`:''}
     ${officeTax12>0?`<tr><td>Office salary tax (12 months)</td><td class="c-grn">− ${fmt(officeTax12)}</td></tr>`:''}
     ${profitRow}${perfRow}${addDedRows}${carRow}${tdsRow}
     ${totalDed>0?`<tr class="subtotal"><td>Total Tax Paid</td><td>${fmt(totalDed)}</td></tr>`:''}
-    <tr class="grand"><td>Tax Payable (Remaining)</td><td>${fmt(taxPayable)}</td></tr>`;
+    ${minTaxRow}
+    <tr class="grand"><td>Tax Payable (Remaining)</td><td>${fmt(finalTaxPayable)}</td></tr>
+    ${totalDed>effectiveNetTax?`<tr class="overpaid-info"><td colspan="2">✓ You overpaid by ${fmt(totalDed-effectiveNetTax)}. You can adjust this amount in next year's tax return.</td></tr>`:''}`;
+
+  // Next Year Impact (only for 2025 slab)
+  const impCard=$('nextYearImpactCard');
+  if(config.taxYear==='2025' && taxableIncome>0){
+    let rem2026=taxableIncome, grossTax2026=0;
+    for(const s of getEffectiveSlabs('2026',config.gender)){
+      const applied=isFinite(s.limit)?Math.min(rem2026,s.limit):rem2026;
+      grossTax2026+=applied*s.rate/100; rem2026-=applied;
+      if(rem2026<=0)break;
+    }
+    const netTax2026=Math.max(0,grossTax2026-rebateAmt);
+    const minTax2026Applies=grossTax2026>0&&netTax2026<MIN_TAX;
+    const effectiveNetTax2026=minTax2026Applies?MIN_TAX:netTax2026;
+    const finalTaxPayable2026=Math.max(0,effectiveNetTax2026-totalDed);
+    const increaseAmt=finalTaxPayable2026-finalTaxPayable;
+    if(increaseAmt===0){impCard.style.display='none';}else{impCard.style.display='block';}
+    const increasePct=finalTaxPayable>0?(increaseAmt/finalTaxPayable*100):0;
+    $('imp_currentTax').textContent=fmt(finalTaxPayable);
+    $('imp_nextTax').textContent=fmt(finalTaxPayable2026);
+    $('imp_increaseAmt').textContent=(increaseAmt>=0?'+':'')+fmt(Math.abs(increaseAmt));
+    $('imp_increasePct').textContent=(increasePct>=0?'+':'')+increasePct.toFixed(1)+'%';
+    $('imp_note').textContent=increaseAmt>0
+      ?`Under the new 2026-27 slab, your estimated tax increases by ${fmt(increaseAmt)} (${increasePct.toFixed(1)}%).`
+      :increaseAmt<0
+        ?`Under the new 2026-27 slab, your estimated tax decreases by ${fmt(Math.abs(increaseAmt))}.`
+        :`Under the new 2026-27 slab, your estimated tax remains the same.`;
+  }else{
+    impCard.style.display='none';
+  }
 
   window._d={totalIncome,nonTaxable,taxableIncome,grossTax,totalInvest,rebateAmt,netTax,
-    totalDed,taxPayable,brkRows,maxRebatable,investRebate,ceiling,
+    totalDed,taxPayable:finalTaxPayable,minTaxApplies,brkRows,maxRebatable,investRebate,ceiling,
     officeTax12,profitTaxDed,perfBonusTaxDed,addDedSum,carAIT,invTDS,
     additionalDeds:[...additionalDeds],beforeTotal,afterTotal,festTotal,
     lfa,perf,profit,pfBothSides,dpsElig,sanchElig,lifeElig};
@@ -1094,7 +1644,7 @@ function exportExcel(){
   const d=window._d||{},br=d.brkRows||[],adds=d.additionalDeds||[];
   const date=new Date().toLocaleDateString('en-GB');
   const rows=[
-    ['bKash Tax Calculator'],['Made by Md Noor Hossain using AI'],[`Generated: ${date}`],[''],
+    ['bKash Tax Calculator'],['Made by Md Noor Hossain'],[`Generated: ${date}`],[''],
     ['KEY FIGURES'],['Total Salary',n2(d.totalIncome||0)],
     ['Taxable Salary',n2(d.taxableIncome||0),'Total Tax Paid',n2(d.totalDed||0)],
     ['Non-Taxable Amount',n2(d.nonTaxable||0),'Tax Need to Pay',n2(d.taxPayable||0)],[''],
@@ -1108,7 +1658,7 @@ function exportExcel(){
     ['Life insurance (eligible)',n2(d.lifeElig||0)],['PF contribution (both sides)',n2(d.pfBothSides||0)],
     ['Total Investment',n2(d.totalInvest||0)],['Investment Rebate (×15%)',n2(d.investRebate||0)],
     ['Applicable Rebate',n2(d.rebateAmt||0)],[''],
-    ['TAX SLAB BREAKDOWN'],['Slab','Limit (BDT)','Rate (%)','Applied (BDT)','Tax (BDT)'],
+    ['TAX SLAB BREAKDOWN'],['Slab','Limit','Rate (%)','Applied','Tax'],
     ...br.map((r,i)=>[getDynLabel(i,r.limit),isFinite(r.limit)?r.limit:'∞',r.rate,n2(r.applied),n2(r.tax)]),
     ['Total','','',n2(d.taxableIncome||0),n2(d.grossTax||0)],[''],
     ['FINAL SETTLEMENT'],
@@ -1119,8 +1669,9 @@ function exportExcel(){
     ...(d.perfBonusTaxDed>0?[['Performance Bonus Tax Deduction',-n2(d.perfBonusTaxDed)]]:[]),
     ...adds.filter(a=>a>0).map((a,i)=>[`Additional deduction ${i+1}`,-n2(a)]),
     ...(d.carAIT>0?[['Car AIT Deduction',-n2(d.carAIT)]]:[]),
-    ...(d.invTDS>0?[['Investment TDS',-n2(d.invTDS)]]:[]),
+    ...(d.invTDS>0?[['Investment Tax Deduction',-n2(d.invTDS)]]:[]),
     ['Total Tax Paid',-n2(d.totalDed||0)],
+    ...(d.minTaxApplies?[['Minimum Tax Applicable (৳5,000 floor)',n2(5000)]]:[]),
     ['TAX PAYABLE (REMAINING)',n2(d.taxPayable||0)],
   ];
   const ws=XLSX.utils.aoa_to_sheet(rows);

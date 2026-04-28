@@ -47,11 +47,11 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 /* ── Overview stats grid (inside Salary Details tab) ── */
 .stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 .stat-block{background:#181818;border:1px solid #2A2A2A;border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
-.su-label{font-size:var(--t-xs);color:#94A3B8;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;line-height:1.4}
-.su-val{font-size:var(--t-lg);font-weight:800;letter-spacing:-.5px;color:#EEEEEE;white-space:nowrap;line-height:1.2}
+.su-label{font-size:var(--t-xs);color:#94A3B8;letter-spacing:.5px;text-transform:uppercase;line-height:1.4}
+.su-val{font-size:var(--t-lg);font-weight:800;letter-spacing:-.5px;color:#EEEEEE;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .su-val.red{color:#e2136e}.su-val.grn{color:#4caf50}.su-val.muted{color:#94A3B8}.su-val.blue{color:#2563eb}
 @media(max-width:800px){.stats-bar{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:500px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.stats-bar{grid-template-columns:repeat(2,1fr)}.stats-bar .stat-block:last-child{grid-column:span 2}}
 
 /* ── Sticky tabs ── */
 .tabs-wrapper{position:sticky;top:58px;z-index:180;background:rgba(11,15,26,.85);border-bottom:1px solid rgba(255,255,255,.09);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
@@ -904,19 +904,19 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
           <span class="su-val" id="stTotalSalary">৳0</span>
         </div>
         <div class="stat-block">
-          <span class="su-label">Taxable Salary</span>
+          <span class="su-label">Taxable</span>
           <span class="su-val" id="stTaxableSalary">৳0</span>
         </div>
         <div class="stat-block">
-          <span class="su-label">Non-Taxable Amount</span>
+          <span class="su-label">Non-Taxable</span>
           <span class="su-val muted" id="stNonTaxable">৳0</span>
         </div>
         <div class="stat-block">
-          <span class="su-label">Total Tax Paid</span>
+          <span class="su-label">Tax Paid</span>
           <span class="su-val grn" id="stTaxPaid">৳0</span>
         </div>
         <div class="stat-block">
-          <span class="su-label">Tax Need to Pay</span>
+          <span class="su-label">Need to Pay</span>
           <span class="su-val blue" id="stTaxDue">৳0</span>
         </div>
       </div>
@@ -945,10 +945,10 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
           <input type="text" id="sbPfDisplay" readonly tabindex="-1">
         </div>
         <div class="sub-title">Festival Bonuses</div>
-        <p class="field-note" style="font-size:13px;margin-bottom:12px">Auto-calculated as 1 month's basic salary (annual ÷ 12) each.</p>
-        <div class="g2">
-          <div class="field"><label>Festival Bonus 1</label><input type="text" id="sbFest1" readonly tabindex="-1"></div>
-          <div class="field"><label>Festival Bonus 2</label><input type="text" id="sbFest2" readonly tabindex="-1"></div>
+        <p class="field-note" style="font-size:13px;margin-bottom:12px">2 months' basic salary</p>
+        <div class="field">
+          <label>Festival Bonus (Total)</label>
+          <input type="text" inputmode="numeric" id="sbFestTotal" value="0" oninput="onNumInput(this);sbFestEdited=true;calc()">
         </div>
         <div class="sub-title">Allowances &amp; Bonuses</div>
         <div class="g2">
@@ -1475,6 +1475,7 @@ let config={nonTaxable:500000,rebatePct:3,rebateCeiling:1000000,dpsMax:120000,sa
 let invEnabled={dps:false,sanch:false,life:false,govSec:false,stocks:false};
 // Salary input mode: 'basic' (default) or 'details'
 let salaryMode='basic';
+let sbFestEdited=false;
 
 const SLAB_PRESETS={
   '2025':[
@@ -1510,6 +1511,7 @@ function closeResetModal(){$('resetModal').classList.remove('open');document.bod
 // ── Salary mode toggle ──
 function onSalaryModeChange(mode){
   salaryMode=mode;
+  sbFestEdited=false;
   $('basicSection').style.display=mode==='basic'?'block':'none';
   $('detailsSection').style.display=mode==='details'?'block':'none';
   markDirty();calc();
@@ -1559,7 +1561,7 @@ function doReset(){
     'mJul','mAug','mSep','mOct','mNov','mDec','mJan','mFeb','mMar','mApr','mMay','mJun',
     'profitTaxAmt','perfBonusTax','invTDSAmt'];
   ids.forEach(id=>{const el=$(id);if(el)el.value='0';});
-  setVal('sbPfDisplay',0);setVal('sbFest1',0);setVal('sbFest2',0);
+  setVal('sbPfDisplay',0);setVal('sbFestTotal',0);sbFestEdited=false;
   // Reset to basic mode
   salaryMode='basic';
   document.querySelector('input[name="salaryMode"][value="basic"]').checked=true;
@@ -1874,10 +1876,11 @@ function calc(){
     _bB=_aB=v('sbBasic'); _bH=_aH=v('sbHra');
     _bM=_aM=v('sbMedical'); _bC=_aC=v('sbConveyance');
     _lfa=v('sbLfa');
-    _fest1=_fest2=Math.round(_bB/12);
+    const autoFest=Math.round(_bB/6);
+    if(!sbFestEdited) setVal('sbFestTotal',autoFest);
+    _fest1=v('sbFestTotal'); _fest2=0;
     $('sbPfLbl').textContent=`Provident fund: Employer Contribution (${config.pfRate}% of basic)`;
     setVal('sbPfDisplay',_bB*PF_RATE);
-    setVal('sbFest1',_fest1); setVal('sbFest2',_fest2);
   } else {
     syncFestAuto(); syncLfaAuto();
     _bB=v('bBasic'); _aB=v('aBasic');

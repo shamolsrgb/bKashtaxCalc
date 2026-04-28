@@ -4,31 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>bKash Tax Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 /*
-  Type scale — 16px base, ×1.25 ratio (Major Third)
+  Type scale — 18px base, +2px shift across all steps
   Step  px    Usage
-  -2    12px  Captions, badges, metadata          (WCAG: bold or large context only)
-  -1    13px  Secondary labels, field hints
-   0    16px  Body / base — inputs, table cells
-  +1    18px  Subtitles, stat values, emphasis
-  +2    20px  Card numbers, section totals
-  +3    24px  Grand total, hero values
+  -2    14px  Captions, badges, metadata
+  -1    15px  Secondary labels, field hints
+   0    18px  Body / base — inputs, table cells
+  +1    20px  Subtitles, stat values, emphasis
+  +2    22px  Card numbers, section totals
+  +3    26px  Grand total, hero values
 
-  All sizes ≥ 12px; line-height ≥ 1.4 on all text — meets WCAG 1.4.4 & 1.4.8.
-  Contrast: #aaa/#888 labels pass WCAG AA Large (≥18px or ≥14px bold); body #e0e0e0 >7:1.
+  All sizes ≥ 14px; line-height ≥ 1.4 on all text — meets WCAG 1.4.4 & 1.4.8.
 */
 :root{
-  --t-xs:12px;--t-sm:13px;--t-base:16px;
-  --t-md:18px;--t-lg:20px;--t-xl:24px;
+  --t-xs:14px;--t-sm:15px;--t-base:18px;
+  --t-md:20px;--t-lg:22px;--t-xl:26px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#181818;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:var(--t-base);line-height:1.5;min-height:100vh}
+body{background:#121212;color:#EEEEEE;font-family:'Quicksand',sans-serif;font-size:var(--t-base);line-height:1.5;min-height:100vh}
 
 /* ── Header ── */
-header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200}
-.logo{width:40px;height:40px;background:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#e2136e;font-size:var(--t-sm);flex-shrink:0}
+header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200}
+.logo{width:40px;height:40px;background:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#2563eb;font-size:var(--t-sm);flex-shrink:0}
 .header-text{flex:1}
 .header-text h1{font-size:var(--t-md);color:#fff;font-weight:700;line-height:1.2}
 .header-text p{font-size:var(--t-xs);color:rgba(255,255,255,.70);margin-top:2px;line-height:1.4}
@@ -41,39 +43,38 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .cfg-btn:hover{background:rgba(255,255,255,.30)}
 .cfg-btn svg{width:18px;height:18px;fill:#fff}
 
-/* ── Stats bar ── */
-.stats-bar{background:#1c1c1c;border-bottom:1px solid #2a2a2a;position:sticky;top:58px;z-index:190;display:grid;grid-template-columns:repeat(5,1fr)}
-.stat-block{padding:11px 16px;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;gap:4px}
-.stat-block:last-child{border-right:none}
-.su-label{font-size:var(--t-xs);color:#888;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;line-height:1.4}
-.su-val{font-size:var(--t-md);font-weight:800;letter-spacing:-.5px;color:#e0e0e0;white-space:nowrap;line-height:1.2}
-.su-val.red{color:#e2136e}.su-val.grn{color:#4caf50}.su-val.muted{color:#aaa}
-@media(max-width:800px){.stats-bar{grid-template-columns:repeat(3,1fr)}.stat-block:nth-child(3){border-right:none}}
-@media(max-width:500px){.stats-bar{grid-template-columns:repeat(2,1fr)}.stat-block:nth-child(2n){border-right:none}.stat-block{border-bottom:1px solid #2a2a2a}}
+/* ── Overview stats grid (inside Salary Details tab) ── */
+.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.stat-block{background:#181818;border:1px solid #2A2A2A;border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.su-label{font-size:var(--t-xs);color:#94A3B8;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;line-height:1.4}
+.su-val{font-size:var(--t-lg);font-weight:800;letter-spacing:-.5px;color:#EEEEEE;white-space:nowrap;line-height:1.2}
+.su-val.red{color:#e2136e}.su-val.grn{color:#4caf50}.su-val.muted{color:#94A3B8}
+@media(max-width:800px){.stats-bar{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:500px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
 
 /* ── Sticky tabs ── */
-.tabs-wrapper{position:sticky;top:110px;z-index:180;background:#181818;border-bottom:1px solid #2e2e2e}
+.tabs-wrapper{position:sticky;top:58px;z-index:180;background:#121212;border-bottom:1px solid #2A2A2A}
 .tabs-wrapper-inner{max-width:960px;margin:0 auto;padding:0 16px}
 .tabs-nav{display:flex;gap:4px;padding:10px 0 0}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:#888;padding:9px 20px;font-size:var(--t-base);font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:-1px;white-space:nowrap;line-height:1.3}
-.tab-btn:hover{color:#ccc}
-.tab-btn.active{color:#e2136e;border-bottom-color:#e2136e}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:#94A3B8;padding:9px 20px;font-size:var(--t-base);font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:-1px;white-space:nowrap;line-height:1.3}
+.tab-btn:hover{color:#CCCCCC}
+.tab-btn.active{color:#2563eb;border-bottom-color:#2563eb}
 
 /* ── Modal ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:999;padding:16px}
 .modal-overlay.open{display:flex}
-.modal{background:#242424;border-radius:12px;width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;border:1px solid #333;box-shadow:0 24px 64px rgba(0,0,0,.6)}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #2e2e2e;flex-shrink:0}
+.modal{background:#1E1E1E;border-radius:12px;width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;border:1px solid #2E2E2E;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #2A2A2A;flex-shrink:0}
 .modal-hdr h2{font-size:var(--t-md);font-weight:700;line-height:1.3}
-.modal-close{background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;width:30px;height:30px;cursor:pointer;font-size:var(--t-base);display:flex;align-items:center;justify-content:center;transition:all .2s}
-.modal-close:hover{border-color:#e2136e;color:#e2136e}
+.modal-close{background:none;border:1px solid #3a3a3a;border-radius:6px;color:#94A3B8;width:30px;height:30px;cursor:pointer;font-size:var(--t-base);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{border-color:#e2136e;color:#e2136e;background:rgba(226,19,110,.08)}
 .modal-body{padding:20px;overflow-y:auto;flex:1}
-.modal-ftr{padding:14px 20px;border-top:1px solid #2e2e2e;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
-.btn-ghost{background:none;border:1px solid #444;color:#aaa;border-radius:7px;padding:9px 18px;font-size:var(--t-sm);cursor:pointer;transition:all .2s;line-height:1.4}
-.btn-ghost:hover{border-color:#e2136e;color:#e2136e}
-.btn-pink{background:#e2136e;border:none;color:#fff;border-radius:7px;padding:9px 22px;font-size:var(--t-sm);font-weight:700;cursor:pointer;transition:background .2s;line-height:1.4}
-.btn-pink:hover{background:#c4115e}
-.modal-section-title{font-size:var(--t-xs);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#999;margin:22px 0 12px;padding-bottom:8px;border-bottom:1px solid #2e2e2e;line-height:1.4}
+.modal-ftr{padding:14px 20px;border-top:1px solid #2A2A2A;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+.btn-ghost{background:none;border:1px solid #444;color:#94A3B8;border-radius:7px;padding:9px 18px;font-size:var(--t-sm);cursor:pointer;transition:all .2s;line-height:1.4}
+.btn-ghost:hover{border-color:#2563eb;color:#2563eb}
+.btn-pink{background:#2563eb;border:none;color:#fff;border-radius:7px;padding:9px 22px;font-size:var(--t-sm);font-weight:700;cursor:pointer;transition:background .2s;line-height:1.4}
+.btn-pink:hover{background:#1D4ED8}
+.modal-section-title{font-size:var(--t-xs);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#94A3B8;margin:22px 0 12px;padding-bottom:8px;border-bottom:1px solid #2A2A2A;line-height:1.4}
 .modal-section-title:first-child{margin-top:0}
 
 /* ── Reset confirmation modal ── */
@@ -83,9 +84,9 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 
 /* ── Layout ── */
 .container{max-width:960px;margin:0 auto;padding:14px 16px 32px}
-.card{background:#242424;border-radius:10px;padding:22px;margin-bottom:14px;border:1px solid #2e2e2e}
-.sec-title{font-size:var(--t-xs);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#999;margin-bottom:18px;line-height:1.4}
-.sub-title{font-size:var(--t-xs);font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#777;margin:20px 0 14px;padding-bottom:8px;border-bottom:1px solid #2a2a2a;line-height:1.4}
+.card{background:#1E1E1E;border-radius:10px;padding:22px;margin-bottom:14px;border:1px solid #2A2A2A}
+.sec-title{font-size:var(--t-xs);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#94A3B8;margin-bottom:18px;line-height:1.4}
+.sub-title{font-size:var(--t-xs);font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94A3B8;margin:20px 0 14px;padding-bottom:8px;border-bottom:1px solid #2A2A2A;line-height:1.4}
 
 /* ── Grids ── */
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -96,20 +97,20 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 
 /* ── Form fields ── */
 .field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:var(--t-sm);color:#aaa;line-height:1.4;font-weight:500}
-.field input,.field select{background:#141414;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:9px 11px;font-size:var(--t-base);width:100%;outline:none;transition:border-color .15s;font-family:inherit;line-height:1.4}
-.field input:focus,.field select:focus{border-color:#e2136e}
-.field input[readonly]{background:#111;opacity:.5;cursor:not-allowed}
+.field label{font-size:var(--t-sm);color:#94A3B8;line-height:1.4;font-weight:500}
+.field input,.field select{background:#161616;border:1px solid #2E2E2E;border-radius:6px;color:#EEEEEE;padding:9px 11px;font-size:var(--t-base);width:100%;outline:none;transition:border-color .15s;font-family:inherit;line-height:1.4}
+.field input:not([readonly]):focus,.field select:focus{border-color:#2563eb}
+.field input[readonly]{background:#0F0F0F;opacity:.5;cursor:not-allowed}
 .field select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px}
-.field-note{font-size:var(--t-xs);color:#888;margin-top:3px;line-height:1.5;font-style:italic}
+.field-note{font-size:var(--t-xs);color:#94A3B8;margin-top:3px;line-height:1.5;font-style:italic}
 
 /* ── Investment rows ── */
-.inv-row{background:#1a1a1a;border:1px solid #2e2e2e;border-radius:8px;padding:14px 16px;margin-bottom:10px}
+.inv-row{background:#181818;border:1px solid #2A2A2A;border-radius:8px;padding:14px 16px;margin-bottom:10px}
 .inv-row-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
 .inv-row-header.open{margin-bottom:14px}
-.inv-row-label{font-size:var(--t-sm);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;line-height:1.4}
-.inv-row-remove{background:none;border:1px solid #3a3a3a;border-radius:5px;color:#666;width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
-.inv-row-remove:hover{border-color:#e2136e;color:#e2136e;background:rgba(226,19,110,.08)}
+.inv-row-label{font-size:var(--t-sm);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#94A3B8;line-height:1.4}
+.inv-row-remove{background:none;border:1px solid rgba(226,19,110,.35);border-radius:5px;color:#e2136e;width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.inv-row-remove:hover{border-color:#e2136e;color:#e2136e;background:rgba(226,19,110,.12)}
 .inv-row-remove svg{width:13px;height:13px;fill:currentColor;pointer-events:none}
 .inv-row-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 @media(max-width:600px){.inv-row-fields{grid-template-columns:1fr 1fr}}
@@ -120,34 +121,33 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .period-col:first-child{padding-left:0;border-right:1px solid #2e2e2e}
 .period-col:last-child{padding-right:0}
 .period-hdr{display:flex;align-items:center;gap:8px;margin-bottom:16px}
-.period-hdr span{font-size:var(--t-base);font-weight:700;color:#ccc;line-height:1.3}
-.period-badge{font-size:var(--t-xs);font-weight:700;letter-spacing:.5px;color:#e2136e;border:1px solid #6a0d37;border-radius:4px;padding:3px 8px;background:rgba(226,19,110,.08);line-height:1.4}
+.period-hdr span{font-size:var(--t-base);font-weight:700;color:#CCCCCC;line-height:1.3}
+.period-badge{font-size:var(--t-xs);font-weight:700;letter-spacing:.5px;color:#2563eb;border:1px solid #1E40AF;border-radius:4px;padding:3px 8px;background:rgba(37,99,235,.1);line-height:1.4}
 @media(max-width:600px){.salary-split{grid-template-columns:1fr}.period-col:first-child{border-right:none;border-bottom:1px solid #2e2e2e;padding-bottom:16px;margin-bottom:16px}.period-col{padding:0}}
 
 /* ── Festival / LFA bonus row ── */
-.fest-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;flex-wrap:wrap}
-.fest-lbl{font-size:var(--t-sm);color:#aaa;margin-bottom:6px;font-weight:500;line-height:1.4}
-.fest-source{display:flex;border:1px solid #333;border-radius:6px;overflow:hidden;height:38px}
-.fest-source label{display:flex;align-items:center;justify-content:center;padding:0 12px;cursor:pointer;font-size:var(--t-sm);color:#888;transition:all .2s;white-space:nowrap;border-right:1px solid #333;line-height:1}
-.fest-source label:last-child{border-right:none}
+.fest-row{display:flex;align-items:flex-end;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.fest-lbl{font-size:var(--t-sm);color:#94A3B8;margin-bottom:6px;font-weight:500;line-height:1.4}
+.fest-source{display:flex;width:fit-content;background:#161616;border:1px solid #2A2A2A;border-radius:6px;padding:4px;gap:3px}
+.fest-source label{display:flex;align-items:center;justify-content:center;padding:7px 14px;cursor:pointer;font-size:var(--t-sm);font-weight:600;color:#94A3B8;border-radius:4px;transition:all .2s;white-space:nowrap;line-height:1.4}
 .fest-source input[type=radio]{display:none}
-.fest-source label:has(input:checked){background:rgba(226,19,110,.14);color:#e2136e;font-weight:700}
+.fest-source label:has(input:checked){background:#2E2E2E;color:#2563eb;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.45)}
 .fest-val-wrap{display:flex;flex-direction:column;gap:6px;flex:1;min-width:130px}
-.fest-val-wrap label{font-size:var(--t-sm);color:#aaa;font-weight:500;line-height:1.4}
-.fest-val-wrap input{background:#141414;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:9px 11px;font-size:var(--t-base);outline:none;transition:border-color .15s;width:100%;font-family:inherit;line-height:1.4}
-.fest-val-wrap input:focus{border-color:#e2136e}
-.fest-val-wrap input[readonly]{background:#111;opacity:.5;cursor:not-allowed}
-.fest-val-wrap .field-note{font-size:var(--t-xs);color:#888;font-style:italic;line-height:1.5}
+.fest-val-wrap label{font-size:var(--t-sm);color:#94A3B8;font-weight:500;line-height:1.4}
+.fest-val-wrap input{background:#161616;border:1px solid #2E2E2E;border-radius:6px;color:#EEEEEE;padding:9px 11px;font-size:var(--t-base);outline:none;transition:border-color .15s;width:100%;font-family:inherit;line-height:1.4}
+.fest-val-wrap input:not([readonly]):focus{border-color:#2563eb}
+.fest-val-wrap input[readonly]{background:#0F0F0F;opacity:.5;cursor:not-allowed}
+.fest-val-wrap .field-note{font-size:var(--t-xs);color:#94A3B8;font-style:italic;line-height:1.5}
 
 /* ── Income summary bar ── */
-.income-summary{background:#1a1a1a;border:1px solid #2e2e2e;border-radius:8px;padding:14px 16px;margin-top:18px;display:flex;flex-wrap:wrap;gap:6px 0;align-items:stretch}
-.inc-item{flex:1;min-width:100px;padding:0 14px;border-right:1px solid #2a2a2a;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.income-summary{background:#181818;border:1px solid #2A2A2A;border-radius:8px;padding:14px 16px;margin-top:18px;display:flex;flex-wrap:wrap;gap:6px 0;align-items:stretch}
+.inc-item{flex:1;min-width:100px;padding:0 14px;border-right:1px solid #2A2A2A;display:flex;flex-direction:column;justify-content:center;gap:4px}
 .inc-item:first-child{padding-left:0}
 .inc-item:last-child{border-right:none;padding-right:0}
-.inc-lbl{font-size:var(--t-xs);color:#888;letter-spacing:.3px;white-space:nowrap;line-height:1.4}
-.inc-val{font-size:var(--t-sm);font-weight:700;color:#ccc;line-height:1.3}
-.inc-item.inc-total .inc-lbl{color:#e2136e}
-.inc-item.inc-total .inc-val{color:#e2136e;font-size:var(--t-md)}
+.inc-lbl{font-size:var(--t-xs);color:#94A3B8;letter-spacing:.3px;white-space:nowrap;line-height:1.4}
+.inc-val{font-size:var(--t-sm);font-weight:700;color:#CCCCCC;line-height:1.3}
+.inc-item.inc-total .inc-lbl{color:#2563eb}
+.inc-item.inc-total .inc-val{color:#2563eb;font-size:var(--t-md)}
 
 /* ── Toggle ── */
 .toggle-wrap{display:flex;align-items:center;gap:10px;user-select:none}
@@ -155,64 +155,70 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .toggle input{opacity:0;width:0;height:0;position:absolute}
 .slider{position:absolute;inset:0;background:#3a3a3a;border-radius:22px;transition:.25s;cursor:pointer}
 .slider:before{content:'';position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
-.toggle input:checked+.slider{background:#e2136e}
+.toggle input:checked+.slider{background:#2563eb}
 .toggle input:checked+.slider:before{transform:translateX(18px)}
-.toggle-label{font-size:var(--t-base);color:#ccc;line-height:1.4}
+.toggle-label{font-size:var(--t-base);color:#CCCCCC;line-height:1.4}
 
 /* ── Slab table (config modal) ── */
 .slab-tbl{width:100%;border-collapse:collapse;font-size:var(--t-sm)}
-.slab-tbl th{text-align:left;font-size:var(--t-xs);color:#777;padding:5px 8px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;line-height:1.4}
+.slab-tbl th{text-align:left;font-size:var(--t-xs);color:#94A3B8;padding:5px 8px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;line-height:1.4}
 .slab-tbl td{padding:4px 8px;vertical-align:middle}
-.slab-tbl td input{background:#141414;border:1px solid #333;border-radius:5px;color:#e0e0e0;padding:6px 9px;font-size:var(--t-sm);outline:none;transition:border-color .15s;width:100%;font-family:inherit}
-.slab-tbl td input:focus{border-color:#e2136e}
+.slab-tbl td input{background:#161616;border:1px solid #2E2E2E;border-radius:5px;color:#EEEEEE;padding:6px 9px;font-size:var(--t-sm);outline:none;transition:border-color .15s;width:100%;font-family:inherit}
+.slab-tbl td input:not([readonly]):focus{border-color:#2563eb}
 .slab-tbl td input[readonly]{opacity:.4}
-.slab-dyn{font-size:var(--t-sm);color:#aaa;line-height:1.4}
-.rate-wrap{display:flex;align-items:center;gap:5px;color:#888}
+.slab-dyn{font-size:var(--t-sm);color:#94A3B8;line-height:1.4}
+.rate-wrap{display:flex;align-items:center;gap:5px;color:#94A3B8}
 
 /* ── Month grid ── */
 .month-block{display:flex;flex-direction:column;gap:5px}
-.month-block label{font-size:var(--t-sm);color:#aaa;line-height:1.4;font-weight:500}
-.month-block input{background:#141414;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:8px 9px;font-size:var(--t-sm);width:100%;outline:none;transition:border-color .15s;font-family:inherit;text-align:left;line-height:1.4}
-.month-block input:focus{border-color:#e2136e}
+.month-block label{font-size:var(--t-sm);color:#94A3B8;line-height:1.4;font-weight:500}
+.month-block input{background:#161616;border:1px solid #2E2E2E;border-radius:6px;color:#EEEEEE;padding:8px 9px;font-size:var(--t-sm);width:100%;outline:none;transition:border-color .15s;font-family:inherit;text-align:left;line-height:1.4}
+.month-block input:not([readonly]):focus{border-color:#2563eb}
+
+/* ── Section header row (title + inline toggle) ── */
+.sec-hdr-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.sec-hdr-row .sec-title{margin-bottom:4px}
+.sec-hdr-row p{font-size:13px;color:#94A3B8;line-height:1.5;margin:0}
 
 /* ── Deduction total bar ── */
-.ded-total-bar{background:#1a1a1a;border:1px solid #2e2e2e;border-radius:8px;padding:11px 16px;margin-top:14px;display:flex;justify-content:space-between;align-items:center}
-.ded-total-bar span:first-child{font-size:var(--t-sm);color:#aaa;text-transform:uppercase;letter-spacing:.5px;font-weight:600;line-height:1.4}
+.ded-total-bar{background:#181818;border:1px solid #2A2A2A;border-radius:8px;padding:11px 16px;margin-top:14px;display:flex;justify-content:space-between;align-items:center}
+.ded-total-bar span:first-child{font-size:var(--t-sm);color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;font-weight:600;line-height:1.4}
 .ded-total-bar span:last-child{font-size:var(--t-lg);font-weight:800;color:#4caf50;line-height:1.2}
 
 /* ── Summary 5-card ── */
 .sum-grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:22px}
 @media(max-width:700px){.sum-grid5{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:460px){.sum-grid5{grid-template-columns:1fr 1fr}}
-.sum-item{background:#1a1a1a;border-radius:8px;padding:14px;border:1px solid #2a2a2a}
-.sum-item .lbl{font-size:var(--t-xs);color:#888;margin-bottom:6px;line-height:1.4}
+.sum-item{background:#181818;border-radius:8px;padding:14px 16px;border:1px solid #2A2A2A;display:flex;flex-direction:column;gap:6px}
+.sum-item .lbl{font-size:var(--t-xs);color:#94A3B8;letter-spacing:.5px;text-transform:uppercase;line-height:1.4}
 .sum-item .val{font-size:var(--t-lg);font-weight:800;letter-spacing:-.5px;line-height:1.2}
-.val-def{color:#e0e0e0}.val-red{color:#e2136e}.val-grn{color:#4caf50}.val-org{color:#ff9800}
+.val-def{color:#EEEEEE}.val-red{color:#e2136e}.val-grn{color:#4caf50}.val-org{color:#ff9800}
 
 /* ── Settlement table ── */
 .settle-tbl{width:100%;border-collapse:collapse;font-size:var(--t-base);margin-top:8px}
 .settle-tbl td{padding:10px 13px;border-bottom:1px solid #222;line-height:1.4}
 .settle-tbl td:last-child{text-align:right;font-weight:600}
-.settle-tbl tr.section-hdr td{background:#1e1e1e;font-size:var(--t-xs);font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;padding:7px 13px;line-height:1.4}
-.settle-tbl tr.grand td{font-size:var(--t-md);font-weight:800;color:#e2136e;border-top:2px solid #3a3a3a;border-bottom:none;line-height:1.3}
-.settle-tbl tr.subtotal td{color:#aaa;font-weight:700;background:#1e1e1e}
+.settle-tbl tr.section-hdr td{background:#181818;font-size:var(--t-xs);font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94A3B8;padding:7px 13px;line-height:1.4}
+.settle-tbl tr.grand td{font-size:var(--t-md);font-weight:800;color:#2563eb;border-top:2px solid #3a3a3a;border-bottom:none;line-height:1.3}
+.settle-tbl tr.subtotal td{color:#94A3B8;font-weight:700;background:#181818}
 .settle-tbl tr.overpaid-info td{background:#0d1f0f;border-top:none;border-bottom:none;padding:10px 13px;font-size:var(--t-sm);color:#4caf50;line-height:1.5;text-align:left;font-weight:400}
-.c-red{color:#e2136e}.c-grn{color:#4caf50}.c-yel{color:#ffc107}.c-muted{color:#666}
+.c-red{color:#e2136e}.c-grn{color:#4caf50}.c-yel{color:#ffc107}.c-muted{color:#94A3B8}
 
 /* ── Slab breakdown table ── */
 .brk-tbl{width:100%;border-collapse:collapse;font-size:var(--t-base);margin-bottom:16px}
-.brk-tbl th{text-align:left;color:#777;font-weight:600;font-size:var(--t-xs);text-transform:uppercase;letter-spacing:.5px;padding:7px 11px;border-bottom:1px solid #2e2e2e;line-height:1.4}
+.brk-tbl th{text-align:left;color:#94A3B8;font-weight:600;font-size:var(--t-xs);text-transform:uppercase;letter-spacing:.5px;padding:7px 11px;border-bottom:1px solid #2A2A2A;line-height:1.4}
 .brk-tbl td{padding:10px 11px;border-bottom:1px solid #222;line-height:1.4}
 .brk-tbl tbody tr:last-child td{border-bottom:none;font-weight:700}
 
 /* ── Add deduction ── */
-.add-ded-btn{display:flex;align-items:center;gap:8px;background:none;border:1px dashed #3a3a3a;color:#888;border-radius:8px;padding:10px 16px;font-size:var(--t-sm);cursor:pointer;width:100%;transition:all .2s;margin-top:12px;line-height:1.4}
-.add-ded-btn:hover{border-color:#e2136e;color:#e2136e}
+.add-ded-btn{display:flex;align-items:center;gap:8px;background:none;border:1px dashed #3a3a3a;color:#94A3B8;border-radius:8px;padding:10px 16px;font-size:var(--t-sm);cursor:pointer;width:100%;transition:all .2s;margin-top:12px;line-height:1.4}
+.add-ded-btn:hover{border-color:#2563eb;color:#2563eb}
 .add-ded-btn svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
 .ded-row{display:flex;align-items:flex-end;gap:8px;margin-top:10px}
 .ded-row .field{flex:1}
-.remove-ded{background:none;border:1px solid #333;color:#666;border-radius:6px;width:34px;height:38px;cursor:pointer;font-size:var(--t-base);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
-.remove-ded:hover{border-color:#e2136e;color:#e2136e}
+.remove-ded{background:none;border:1px solid rgba(226,19,110,.35);color:#e2136e;border-radius:6px;width:34px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;margin-bottom:1px}
+.remove-ded svg{width:15px;height:15px;fill:currentColor;pointer-events:none}
+.remove-ded:hover{border-color:#e2136e;background:rgba(226,19,110,.1)}
 
 /* ── Export button ── */
 .btn-export{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:14px;background:#1d6f42;color:#fff;border:none;border-radius:8px;font-size:var(--t-md);font-weight:700;cursor:pointer;margin-top:20px;transition:background .2s;line-height:1.3}
@@ -220,23 +226,23 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .btn-export svg{width:20px;height:20px;fill:#fff;flex-shrink:0}
 
 /* ── Suggestion card ── */
-.suggest-card{background:#1a1a2e;border:1px solid #2e3a5a;border-radius:10px;padding:20px;margin-bottom:14px}
+.suggest-card{background:#0D1526;border:1px solid #1E3A6E;border-radius:10px;padding:20px;margin-bottom:14px}
 .suggest-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.suggest-icon{width:34px;height:34px;background:rgba(226,19,110,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.suggest-icon svg{width:18px;height:18px;fill:#e2136e}
-.suggest-title{font-size:var(--t-base);font-weight:700;color:#ccc;line-height:1.3}
-.suggest-subtitle{font-size:var(--t-xs);color:#777;margin-top:3px;line-height:1.4}
+.suggest-icon{width:34px;height:34px;background:rgba(37,99,235,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.suggest-icon svg{width:18px;height:18px;fill:#2563eb}
+.suggest-title{font-size:var(--t-base);font-weight:700;color:#CCCCCC;line-height:1.3}
+.suggest-subtitle{font-size:var(--t-xs);color:#94A3B8;margin-top:3px;line-height:1.4}
 .suggest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
 @media(max-width:600px){.suggest-grid{grid-template-columns:1fr 1fr}}
-.sg-item{background:#12121f;border:1px solid #272740;border-radius:8px;padding:12px}
-.sg-item .s-lbl{font-size:var(--t-xs);color:#777;margin-bottom:5px;line-height:1.4}
+.sg-item{background:#0A1020;border:1px solid #1E3055;border-radius:8px;padding:12px}
+.sg-item .s-lbl{font-size:var(--t-xs);color:#94A3B8;margin-bottom:5px;line-height:1.4}
 .sg-item .s-val{font-size:var(--t-md);font-weight:800;letter-spacing:-.3px;line-height:1.2}
-.s-grn{color:#4caf50}.s-org{color:#ff9800}.s-red{color:#e2136e}.s-def{color:#e0e0e0}
-.progress-bar-wrap{background:#22223a;border-radius:6px;height:8px;overflow:hidden;margin-bottom:7px}
-.progress-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#e2136e,#ff6b9d);transition:width .4s}
-.progress-label{display:flex;justify-content:space-between;font-size:var(--t-xs);color:#777;line-height:1.4}
-.suggest-tip{background:#12121f;border:1px solid #272740;border-radius:8px;padding:11px 15px;font-size:var(--t-sm);color:#aaa;line-height:1.6;margin-top:12px}
-.suggest-tip strong{color:#e2136e}
+.s-grn{color:#4caf50}.s-org{color:#ff9800}.s-red{color:#e2136e}.s-def{color:#EEEEEE}
+.progress-bar-wrap{background:#1A2A45;border-radius:6px;height:8px;overflow:hidden;margin-bottom:7px}
+.progress-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#2563eb,#60A5FA);transition:width .4s}
+.progress-label{display:flex;justify-content:space-between;font-size:var(--t-xs);color:#94A3B8;line-height:1.4}
+.suggest-tip{background:#0A1020;border:1px solid #1E3055;border-radius:8px;padding:11px 15px;font-size:var(--t-sm);color:#94A3B8;line-height:1.6;margin-top:12px}
+.suggest-tip strong{color:#2563eb}
 .suggest-tip.ok{border-color:#1a3a1a;background:#0f1f0f}
 .suggest-tip.ok strong{color:#4caf50}
 
@@ -245,21 +251,21 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 @media(max-width:500px){.inv-picker-grid{grid-template-columns:1fr}}
 .ioc{position:relative}
 .ioc input[type=checkbox]{position:absolute;opacity:0;width:0;height:0}
-.ioc-label{display:flex;align-items:flex-start;gap:12px;border:1px solid #333;border-radius:8px;padding:13px 14px;cursor:pointer;transition:all .2s;background:#1a1a1a;height:100%}
+.ioc-label{display:flex;align-items:flex-start;gap:12px;border:1px solid #2E2E2E;border-radius:8px;padding:13px 14px;cursor:pointer;transition:all .2s;background:#181818;height:100%}
 .ioc-label:hover{border-color:#555}
-.ioc input:checked+.ioc-label{border-color:#e2136e;background:rgba(226,19,110,.07)}
+.ioc input:checked+.ioc-label{border-color:#2563eb;background:rgba(37,99,235,.07)}
 .ioc-check{width:20px;height:20px;border:2px solid #444;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s}
-.ioc input:checked+.ioc-label .ioc-check{background:#e2136e;border-color:#e2136e}
+.ioc input:checked+.ioc-label .ioc-check{background:#2563eb;border-color:#2563eb}
 .ioc-check svg{width:12px;height:12px;fill:#fff;display:none}
 .ioc input:checked+.ioc-label .ioc-check svg{display:block}
-.ioc-name{font-size:var(--t-sm);font-weight:700;color:#ccc;line-height:1.3}
-.ioc input:checked+.ioc-label .ioc-name{color:#e2136e}
-.ioc-desc{font-size:var(--t-xs);color:#666;margin-top:3px;line-height:1.4}
-.btn-add-inv{display:flex;align-items:center;gap:6px;background:rgba(226,19,110,.12);border:1px solid rgba(226,19,110,.3);color:#e2136e;border-radius:7px;padding:7px 13px;font-size:var(--t-xs);font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.3px}
-.btn-add-inv:hover{background:rgba(226,19,110,.22);border-color:#e2136e}
+.ioc-name{font-size:var(--t-sm);font-weight:700;color:#CCCCCC;line-height:1.3}
+.ioc input:checked+.ioc-label .ioc-name{color:#2563eb}
+.ioc-desc{font-size:var(--t-xs);color:#94A3B8;margin-top:3px;line-height:1.4}
+.btn-add-inv{display:flex;align-items:center;gap:6px;background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);color:#2563eb;border-radius:7px;padding:7px 13px;font-size:var(--t-xs);font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.3px}
+.btn-add-inv:hover{background:rgba(37,99,235,.22);border-color:#2563eb}
 .btn-add-inv svg{width:14px;height:14px;fill:currentColor}
-.inv-empty{text-align:center;padding:28px 16px;color:#555;font-size:var(--t-sm);line-height:1.6}
-.inv-empty svg{width:32px;height:32px;fill:#333;margin:0 auto 10px;display:block}
+.inv-empty{text-align:center;padding:28px 16px;color:#94A3B8;font-size:var(--t-sm);line-height:1.6}
+.inv-empty svg{width:32px;height:32px;fill:#3A3A3A;margin:0 auto 10px;display:block}
 
 /* ── Next year impact card ── */
 .impact-card{background:#1e1a0e;border:1px solid #4a3800;border-radius:10px;padding:20px 22px;margin-bottom:14px}
@@ -278,17 +284,12 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .i-pct{font-size:var(--t-md);font-weight:800;color:#ff9800}
 .impact-note{font-size:var(--t-xs);color:#6a5010;margin-top:12px;line-height:1.5;font-style:italic}
 
-/* ── Tax year selector ── */
-.tax-year-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.tyr-option{position:relative}
-.tyr-option input[type=radio]{position:absolute;opacity:0;width:0;height:0}
-.tyr-label{display:flex;flex-direction:column;gap:4px;border:1px solid #333;border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .2s;background:#1a1a1a}
-.tyr-label:hover{border-color:#555}
-.tyr-option input:checked+.tyr-label{border-color:#e2136e;background:rgba(226,19,110,.07)}
-.tyr-year{font-size:var(--t-sm);font-weight:700;color:#ccc;line-height:1.3}
-.tyr-tag{font-size:var(--t-xs);color:#666;line-height:1.4;margin-top:2px}
-.tyr-option input:checked+.tyr-label .tyr-year{color:#e2136e}
-.tyr-option input:checked+.tyr-label .tyr-tag{color:#a0506a}
+/* ── Tax year / gender config row ── */
+.cfg-yr-row{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:16px}
+.cfg-field-lbl{font-size:var(--t-xs);font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#94A3B8;margin-bottom:8px;line-height:1.4}
+.gender-radio-grp{display:flex;gap:18px;align-items:center}
+.radio-opt{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:var(--t-sm);font-weight:600;color:#EEEEEE;user-select:none}
+.radio-opt input[type=radio]{width:16px;height:16px;accent-color:#2563eb;cursor:pointer;flex-shrink:0}
 
 /* ── Misc ── */
 .mt10{margin-top:10px}.mt12{margin-top:12px}.mt14{margin-top:14px}
@@ -305,14 +306,14 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 .cfg-btn{display:none}
 .ham-btn:hover{background:rgba(255,255,255,.30)}
 .ham-btn svg{width:20px;height:20px;fill:#fff}
-.ham-menu{position:absolute;top:calc(100% + 8px);right:0;background:#2a2a2a;border:1px solid #3a3a3a;border-radius:10px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:500;overflow:hidden;display:none}
+.ham-menu{position:absolute;top:calc(100% + 8px);right:0;background:#1E1E1E;border:1px solid #2E2E2E;border-radius:10px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:500;overflow:hidden;display:none}
 .ham-menu.open{display:block}
-.ham-item{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:#e0e0e0;font-size:var(--t-sm);font-weight:600;padding:13px 16px;cursor:pointer;text-align:left;transition:background .15s;font-family:inherit}
-.ham-item:hover{background:#333}
+.ham-item{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:#EEEEEE;font-size:var(--t-sm);font-weight:600;padding:13px 16px;cursor:pointer;text-align:left;transition:background .15s;font-family:inherit}
+.ham-item:hover{background:#2A2A2A}
 .ham-item svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
 .ham-item.danger{color:#e2136e}
 .ham-item.danger:hover{background:rgba(226,19,110,.1)}
-.ham-divider{height:1px;background:#333;margin:0}
+.ham-divider{height:1px;background:#2E2E2E;margin:0}
 
 /* ── Logout modal ── */
 .logout-modal{max-width:400px}
@@ -321,9 +322,6 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 
 /* ── Mobile: ≤ 600px ── */
 @media(max-width:600px){
-  /* Stats bar: hidden on mobile */
-  .stats-bar{display:none}
-
   /* Tabs: sticky directly under header (header ≈ 58px) */
   .tabs-wrapper{position:sticky;top:58px}
 
@@ -333,7 +331,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
   .reset-btn{padding:0 10px;gap:0}
 
   /* Stats bar: tighter text */
-  .su-label{font-size:11px;letter-spacing:.2px}
+  .su-label{font-size:13px;letter-spacing:.2px}
   .su-val{font-size:var(--t-base);letter-spacing:-.3px}
 
   /* Cards: tighter padding */
@@ -341,8 +339,8 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 
   /* Income summary: 2-column wrap */
   .income-summary{display:grid;grid-template-columns:1fr 1fr;gap:0}
-  .inc-item{border-right:none;border-bottom:1px solid #2a2a2a;padding:10px 0}
-  .inc-item:nth-child(odd){border-right:1px solid #2a2a2a;padding-right:10px}
+  .inc-item{border-right:none;border-bottom:1px solid #2A2A2A;padding:10px 0}
+  .inc-item:nth-child(odd){border-right:1px solid #2A2A2A;padding-right:10px}
   .inc-item:last-child{border-bottom:none}
 
   /* Config modal g3 → 1-column inside modal body */
@@ -379,22 +377,225 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 }
 
 /* ── Password gate ── */
-#pwGate{position:fixed;inset:0;background:#181818;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
-.pw-box{background:#242424;border:1px solid #2e2e2e;border-radius:16px;padding:40px 36px;width:100%;max-width:400px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.6)}
-.pw-logo{width:56px;height:56px;background:#e2136e;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-weight:900;color:#fff;font-size:18px;letter-spacing:-1px}
-.pw-box h2{font-size:20px;font-weight:700;color:#e0e0e0;margin-bottom:6px;line-height:1.3}
-.pw-box p{font-size:13px;color:#888;margin-bottom:28px;line-height:1.5}
+#pwGate{position:fixed;inset:0;background:#121212;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.pw-box{background:#1E1E1E;border:1px solid #2A2A2A;border-radius:16px;padding:40px 36px;width:100%;max-width:400px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+.pw-logo{width:56px;height:56px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-weight:900;color:#fff;font-size:20px;letter-spacing:-1px}
+.pw-box h2{font-size:22px;font-weight:700;color:#EEEEEE;margin-bottom:6px;line-height:1.3}
+.pw-box p{font-size:15px;color:#94A3B8;margin-bottom:28px;line-height:1.5}
 .pw-field{position:relative;margin-bottom:14px}
-.pw-field input{width:100%;background:#141414;border:1px solid #333;border-radius:8px;color:#e0e0e0;padding:13px 44px 13px 14px;font-size:16px;outline:none;font-family:inherit;transition:border-color .2s;letter-spacing:.05em}
-.pw-field input:focus{border-color:#e2136e}
-.pw-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#666;display:flex;align-items:center;padding:4px;transition:color .2s}
-.pw-eye:hover{color:#aaa}
+.pw-field input{width:100%;background:#161616;border:1px solid #2E2E2E;border-radius:8px;color:#EEEEEE;padding:13px 44px 13px 14px;font-size:18px;outline:none;font-family:inherit;transition:border-color .2s;letter-spacing:.05em}
+.pw-field input:focus{border-color:#2563eb}
+.pw-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94A3B8;display:flex;align-items:center;padding:4px;transition:color .2s}
+.pw-eye:hover{color:#CCCCCC}
 .pw-eye svg{width:18px;height:18px;fill:currentColor}
-.pw-submit{width:100%;background:#e2136e;border:none;color:#fff;border-radius:8px;padding:13px;font-size:16px;font-weight:700;cursor:pointer;transition:background .2s;font-family:inherit;margin-bottom:12px}
-.pw-submit:hover{background:#c4115e}
+.pw-submit{width:100%;background:#2563eb;border:none;color:#fff;border-radius:8px;padding:13px;font-size:18px;font-weight:700;cursor:pointer;transition:background .2s;font-family:inherit;margin-bottom:12px}
+.pw-submit:hover{background:#1D4ED8}
 .pw-submit:disabled{opacity:.5;cursor:not-allowed}
-.pw-error{font-size:13px;color:#e2136e;min-height:20px;line-height:1.4;margin-top:2px}
-.pw-hint{font-size:12px;color:#555;line-height:1.5;margin-top:8px}
+.pw-error{font-size:15px;color:#e2136e;min-height:20px;line-height:1.4;margin-top:2px}
+.pw-hint{font-size:14px;color:#94A3B8;line-height:1.5;margin-top:8px}
+
+/* ── Theme toggle switch (in hamburger menu) ── */
+.ham-theme-row{display:flex;align-items:center;gap:10px;width:100%;padding:13px 16px;cursor:pointer;transition:background .15s;border:none;background:none;font-family:inherit;font-size:var(--t-sm);font-weight:600;color:#EEEEEE}
+.ham-theme-row:hover{background:#2A2A2A}
+.ham-theme-row svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
+.ham-theme-row .theme-lbl{flex:1;text-align:left}
+.theme-tog{position:relative;width:36px;height:20px;flex-shrink:0}
+.theme-tog input{opacity:0;width:0;height:0;position:absolute}
+.theme-tog-track{position:absolute;inset:0;background:#3a3a3a;border-radius:20px;transition:.25s;cursor:pointer}
+.theme-tog-track:before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#94A3B8;border-radius:50%;transition:.25s}
+body.light-mode .theme-tog-track{background:#2563eb}
+body.light-mode .theme-tog-track:before{transform:translateX(16px);background:#fff}
+
+/* ════════════════════════════════════════
+   LIGHT MODE OVERRIDES
+   ════════════════════════════════════════ */
+body.light-mode{background:#F8F9FA;color:#1A1A1B}
+
+/* Stats bar */
+body.light-mode .stat-block{background:#F8F9FA;border-color:#E2E5E9}
+body.light-mode .su-label{color:#6C757D}
+body.light-mode .su-val{color:#1A1A1B}
+
+/* Tabs */
+body.light-mode .tabs-wrapper{background:#F8F9FA;border-bottom-color:#D1D5DB}
+body.light-mode .tab-btn{color:#6C757D}
+body.light-mode .tab-btn:hover{color:#1A1A1B}
+body.light-mode .tab-btn.active{color:#2563eb;border-bottom-color:#2563eb}
+
+/* Cards & layout */
+body.light-mode .card{background:#FFFFFF;border-color:#E2E5E9}
+body.light-mode .sec-title{color:#6C757D}
+body.light-mode .sub-title{color:#6C757D;border-bottom-color:#E2E5E9}
+
+/* Form fields */
+body.light-mode .field label{color:#6C757D}
+body.light-mode .field input,body.light-mode .field select{background:#F8F9FA;border-color:#D1D5DB;color:#1A1A1B}
+body.light-mode .field input:not([readonly]):focus,body.light-mode .field select:focus{border-color:#2563eb}
+body.light-mode .field input[readonly]{background:#EAECEF;color:#6C757D}
+body.light-mode .field-note{color:#6C757D}
+
+/* Salary split */
+body.light-mode .period-col:first-child{border-right-color:#E2E5E9}
+body.light-mode .period-hdr span{color:#1A1A1B}
+body.light-mode .period-badge{color:#2563eb;border-color:#BFDBFE;background:rgba(37,99,235,.08)}
+
+/* Festival / LFA rows */
+body.light-mode .fest-lbl{color:#6C757D}
+body.light-mode .fest-source{background:#EAECEF;border-color:#D1D5DB}
+body.light-mode .fest-source label{color:#6C757D}
+body.light-mode .fest-source label:has(input:checked){background:#FFFFFF;color:#2563eb;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+body.light-mode .fest-val-wrap label{color:#6C757D}
+body.light-mode .fest-val-wrap input{background:#F8F9FA;border-color:#D1D5DB;color:#1A1A1B}
+body.light-mode .fest-val-wrap input:not([readonly]):focus{border-color:#2563eb}
+body.light-mode .fest-val-wrap input[readonly]{background:#EAECEF;color:#6C757D}
+
+/* Income summary bar */
+body.light-mode .income-summary{background:#FFFFFF;border-color:#E2E5E9}
+body.light-mode .inc-item{border-right-color:#E2E5E9}
+body.light-mode .inc-lbl{color:#6C757D}
+body.light-mode .inc-val{color:#1A1A1B}
+
+/* Deduction total bar */
+body.light-mode .ded-total-bar{background:#FFFFFF;border-color:#E2E5E9}
+body.light-mode .ded-total-bar span:first-child{color:#6C757D}
+
+/* Toggle switch */
+body.light-mode .toggle-label{color:#1A1A1B}
+body.light-mode .slider{background:#ccc}
+
+/* Month blocks */
+body.light-mode .month-block label{color:#6C757D}
+body.light-mode .month-block input{background:#F8F9FA;border-color:#D1D5DB;color:#1A1A1B}
+body.light-mode .month-block input:not([readonly]):focus{border-color:#2563eb}
+
+/* Investment rows */
+body.light-mode .inv-row{background:#F8F9FA;border-color:#E2E5E9}
+body.light-mode .inv-row-label{color:#6C757D}
+body.light-mode .inv-row-remove{border-color:rgba(226,19,110,.3);color:#e2136e}
+body.light-mode .inv-row-remove:hover{border-color:#e2136e;background:rgba(226,19,110,.1)}
+body.light-mode .inv-empty{color:#6C757D}
+body.light-mode .inv-empty span{color:#9CA3AF}
+
+/* Suggest card */
+body.light-mode .suggest-card{background:#EEF2FF;border-color:#C7D2FE}
+body.light-mode .suggest-title{color:#1A1A1B}
+body.light-mode .suggest-subtitle{color:#6C757D}
+body.light-mode .sg-item{background:#FFFFFF;border-color:#DDE4FF}
+body.light-mode .sg-item .s-lbl{color:#6C757D}
+body.light-mode .progress-bar-wrap{background:#DDE4FF}
+body.light-mode .progress-label{color:#6C757D}
+body.light-mode .suggest-tip{background:#FFFFFF;border-color:#DDE4FF;color:#374151}
+body.light-mode .suggest-tip.ok{background:#F0FAF0;border-color:#B2DFB2}
+
+/* Investment picker modal items */
+body.light-mode .ioc-label{background:#F8F9FA;border-color:#D1D5DB}
+body.light-mode .ioc-label:hover{border-color:#9CA3AF}
+body.light-mode .ioc-check{border-color:#9CA3AF}
+body.light-mode .ioc-name{color:#1A1A1B}
+body.light-mode .ioc-desc{color:#6C757D}
+
+/* Tax year / gender config */
+body.light-mode .cfg-field-lbl{color:#6C757D}
+body.light-mode .radio-opt{color:#1A1A1B}
+
+/* Summary cards */
+body.light-mode .sum-item{background:#F8F9FA;border-color:#E2E5E9}
+body.light-mode .sum-item .lbl{color:#6C757D}
+body.light-mode .val-def{color:#1A1A1B}
+
+/* Settlement / breakdown tables */
+body.light-mode .settle-tbl td{border-bottom-color:#E2E5E9}
+body.light-mode .settle-tbl tr.section-hdr td{background:#F8F9FA;color:#6C757D}
+body.light-mode .settle-tbl tr.subtotal td{background:#F1F3F5;color:#6C757D}
+body.light-mode .settle-tbl tr.grand td{border-top-color:#D1D5DB}
+body.light-mode .settle-tbl tr.overpaid-info td{background:#F0FAF0;color:#2E7D32}
+body.light-mode .brk-tbl th{color:#6C757D;border-bottom-color:#E2E5E9}
+body.light-mode .brk-tbl td{border-bottom-color:#E2E5E9}
+body.light-mode .c-muted{color:#6C757D}
+
+/* Impact card */
+body.light-mode .impact-card{background:#FFF8E7;border-color:#FFE082}
+body.light-mode .impact-title{color:#7B5800}
+body.light-mode .impact-subtitle{color:#A07020}
+body.light-mode .impact-item{background:#FFF3CC;border-color:#FFD54F}
+body.light-mode .impact-item .i-lbl{color:#A07020}
+body.light-mode .i-neutral{color:#7B5800}
+body.light-mode .i-up{color:#E65100}
+body.light-mode .i-pct{color:#E65100}
+body.light-mode .impact-note{color:#A07020}
+
+/* Add deduction button */
+body.light-mode .add-ded-btn{border-color:#D1D5DB;color:#6C757D}
+body.light-mode .add-ded-btn:hover{border-color:#2563eb;color:#2563eb}
+body.light-mode .remove-ded{border-color:rgba(226,19,110,.3);color:#e2136e}
+body.light-mode .remove-ded:hover{border-color:#e2136e;background:rgba(226,19,110,.1)}
+
+/* Modals */
+body.light-mode .modal{background:#FFFFFF;border-color:#E2E5E9}
+body.light-mode .modal-hdr{border-bottom-color:#E2E5E9}
+body.light-mode .modal-hdr h2{color:#1A1A1B}
+body.light-mode .modal-close{border-color:#D1D5DB;color:#6C757D}
+body.light-mode .modal-close:hover{border-color:#e2136e;color:#e2136e;background:rgba(226,19,110,.08)}
+body.light-mode .modal-body{background:#FFFFFF}
+body.light-mode .modal-ftr{border-top-color:#E2E5E9;background:#FFFFFF}
+body.light-mode .modal-section-title{color:#6C757D;border-bottom-color:#E2E5E9}
+body.light-mode .btn-ghost{border-color:#D1D5DB;color:#6C757D}
+body.light-mode .btn-ghost:hover{border-color:#2563eb;color:#2563eb}
+
+/* Slab table in config modal */
+body.light-mode .slab-tbl th{color:#6C757D}
+body.light-mode .slab-tbl td input{background:#F8F9FA;border-color:#D1D5DB;color:#1A1A1B}
+body.light-mode .slab-tbl td input:not([readonly]):focus{border-color:#2563eb}
+body.light-mode .slab-dyn{color:#6C757D}
+body.light-mode .rate-wrap{color:#6C757D}
+
+/* Mobile income-summary borders in light mode */
+@media(max-width:600px){
+  body.light-mode .inc-item{border-bottom-color:#E2E5E9}
+  body.light-mode .inc-item:nth-child(odd){border-right-color:#E2E5E9}
+  body.light-mode .period-col:first-child{border-bottom-color:#E2E5E9}
+}
+
+/* Hamburger menu */
+body.light-mode .ham-menu{background:#FFFFFF;border-color:#E2E5E9;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+body.light-mode .ham-theme-row{color:#1A1A1B}
+body.light-mode .ham-theme-row:hover{background:#F1F3F5}
+body.light-mode .ham-item{color:#1A1A1B}
+body.light-mode .ham-item:hover{background:#F1F3F5}
+body.light-mode .ham-item.danger{color:#e2136e}
+body.light-mode .ham-item.danger:hover{background:rgba(226,19,110,.06)}
+body.light-mode .ham-divider{background:#E2E5E9}
+
+/* Password gate */
+body.light-mode #pwGate{background:#F8F9FA}
+body.light-mode .pw-box{background:#FFFFFF;border-color:#E2E5E9;box-shadow:0 32px 80px rgba(0,0,0,.1)}
+body.light-mode .pw-box h2{color:#1A1A1B}
+body.light-mode .pw-box p{color:#6C757D}
+body.light-mode .pw-field input{background:#F8F9FA;border-color:#D1D5DB;color:#1A1A1B}
+body.light-mode .pw-hint{color:#6C757D}
+body.light-mode .pw-eye{color:#6C757D}
+
+/* Reset / logout modal icons */
+body.light-mode .reset-warn-icon{background:rgba(226,19,110,.1)}
+body.light-mode .logout-warn-icon{background:rgba(226,19,110,.1)}
+
+/* Sec header row description */
+body.light-mode .sec-hdr-row p{color:#6C757D}
+
+/* Investment picker modal description */
+body.light-mode .modal-body>p{color:#4B5563}
+
+/* Festival bonus note text */
+body.light-mode .card>p[style]{color:#6C757D !important}
+
+/* Additional field note in light mode */
+body.light-mode .field-note{color:#6C757D}
+.modal-body h3{color:#EEEEEE}
+.modal-body p{color:#94A3B8}
+.modal-body p strong{color:#CCCCCC}
+body.light-mode .modal-body h3{color:#1A1A1B}
+body.light-mode .modal-body p{color:#4B5563}
+body.light-mode .modal-body p strong{color:#1A1A1B}
 </style>
 </head>
 <body>
@@ -428,8 +629,8 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
       <div class="reset-warn-icon">
         <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
       </div>
-      <h3 style="color:#e0e0e0;font-size:16px;margin-bottom:10px">All entered data will be lost</h3>
-      <p style="color:#888;font-size:13px;line-height:1.7">You have entered salary, investment, and tax deduction data. Resetting will permanently clear <strong style="color:#ccc">all values</strong> — salary figures, investments, monthly deductions, and additional entries. You'll need to start over from scratch.</p>
+      <h3 style="font-size:18px;margin-bottom:10px">All entered data will be lost</h3>
+      <p style="font-size:15px;line-height:1.7">You have entered salary, investment, and tax deduction data. Resetting will permanently clear <strong>all values</strong> — salary figures, investments, monthly deductions, and additional entries. You'll need to start over from scratch.</p>
     </div>
     <div class="modal-ftr">
       <button class="btn-ghost" onclick="closeResetModal()">Cancel, keep my data</button>
@@ -449,8 +650,8 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
       <div class="logout-warn-icon">
         <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zm-5 11a8 8 0 0 1 0-16v2a6 6 0 1 0 0 12v2z"/></svg>
       </div>
-      <h3 style="color:#e0e0e0;font-size:16px;margin-bottom:10px">Are you sure you want to logout?</h3>
-      <p style="color:#888;font-size:13px;line-height:1.7">You will be returned to the password screen. Any unsaved data will remain in the current session.</p>
+      <h3 style="font-size:18px;margin-bottom:10px">Are you sure you want to logout?</h3>
+      <p style="font-size:15px;line-height:1.7">You will be returned to the password screen. Any unsaved data will remain in the current session.</p>
     </div>
     <div class="modal-ftr">
       <button class="btn-ghost" onclick="closeLogoutModal()">Cancel</button>
@@ -467,7 +668,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
       <button class="modal-close" onclick="closeInvModal()">✕</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:var(--t-sm);color:#888;margin-bottom:18px;line-height:1.6">Choose which investment types to include. Only selected items will appear in Investment Details.</p>
+      <p class="field-note" style="font-size:var(--t-sm);margin-bottom:18px;line-height:1.6">Choose which investment types to include. Only selected items will appear in Investment Details.</p>
       <div class="inv-picker-grid">
         <div class="ioc">
           <input type="checkbox" id="ioc_dps">
@@ -532,46 +733,30 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
         <div class="field"><label>DPS max limit</label><input type="text" inputmode="numeric" id="mDpsMax" value="1,20,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Sanchaypatra max limit</label><input type="text" inputmode="numeric" id="mSanchMax" value="5,00,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Life insurance eligible % of premium</label>
-          <div style="display:flex;align-items:center;gap:8px"><input type="number" id="mLifePct" value="10" step="1" style="flex:1"><span style="color:#888">%</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><input type="number" id="mLifePct" value="10" step="1" style="flex:1"><span style="color:#94A3B8">%</span></div>
         </div>
       </div>
       <div class="g3" style="margin-top:12px">
         <div class="field"><label>Government Securities max limit</label><input type="text" inputmode="numeric" id="mGovSecMax" value="5,00,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Provident fund rate (% of basic)</label>
-          <div style="display:flex;align-items:center;gap:8px"><input type="number" id="mPfRate" value="10" step="1" min="0" max="100" style="flex:1"><span style="color:#888">%</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><input type="number" id="mPfRate" value="10" step="1" min="0" max="100" style="flex:1"><span style="color:#94A3B8">%</span></div>
         </div>
       </div>
       <div class="modal-section-title">Tax Year &amp; Slab Configuration</div>
-      <div class="tax-year-picker">
-        <div class="tyr-option">
-          <input type="radio" name="taxYear" id="tyr2025" value="2025" onchange="onTaxYearChange('2025')" checked>
-          <label class="tyr-label" for="tyr2025">
-            <span class="tyr-year">Income Year 2025-26</span>
-            <span class="tyr-tag">Old Slab — 7 brackets (0%–30%)</span>
-          </label>
+      <div class="cfg-yr-row">
+        <div>
+          <div class="cfg-field-lbl">Income Year</div>
+          <div class="fest-source">
+            <label><input type="radio" name="taxYear" id="tyr2025" value="2025" onchange="onTaxYearChange('2025')" checked><span>2025-26</span></label>
+            <label><input type="radio" name="taxYear" id="tyr2026" value="2026" onchange="onTaxYearChange('2026')"><span>2026-27-28</span></label>
+          </div>
         </div>
-        <div class="tyr-option">
-          <input type="radio" name="taxYear" id="tyr2026" value="2026" onchange="onTaxYearChange('2026')">
-          <label class="tyr-label" for="tyr2026">
-            <span class="tyr-year">Income Year 2026-27-28</span>
-            <span class="tyr-tag">New Slab — 6 brackets (0%–30%)</span>
-          </label>
-        </div>
-      </div>
-      <div class="tax-year-picker" style="margin-top:10px">
-        <div class="tyr-option">
-          <input type="radio" name="taxGender" id="tgMale" value="male" onchange="onGenderChange('male')" checked>
-          <label class="tyr-label" for="tgMale">
-            <span class="tyr-year">Male</span>
-            <span class="tyr-tag">Standard exemption limit</span>
-          </label>
-        </div>
-        <div class="tyr-option">
-          <input type="radio" name="taxGender" id="tgFemale" value="female" onchange="onGenderChange('female')">
-          <label class="tyr-label" for="tgFemale">
-            <span class="tyr-year">Female</span>
-            <span class="tyr-tag">+৳50,000 on first slab</span>
-          </label>
+        <div>
+          <div class="cfg-field-lbl">Gender</div>
+          <div class="gender-radio-grp">
+            <label class="radio-opt"><input type="radio" name="taxGender" id="tgMale" value="male" onchange="onGenderChange('male')" checked><span>Male</span></label>
+            <label class="radio-opt"><input type="radio" name="taxGender" id="tgFemale" value="female" onchange="onGenderChange('female')"><span>Female</span></label>
+          </div>
         </div>
       </div>
 
@@ -613,6 +798,12 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
           Configuration
         </button>
         <div class="ham-divider"></div>
+        <div class="ham-theme-row" onclick="toggleTheme()">
+          <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+          <span class="theme-lbl">Theme</span>
+          <div class="theme-tog"><div class="theme-tog-track" id="themeTogTrack"></div></div>
+        </div>
+        <div class="ham-divider"></div>
         <button class="ham-item danger" onclick="closeHamMenu();openLogoutModal()">
           <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zm-5 11a8 8 0 0 1 0-16v2a6 6 0 1 0 0 12v2z"/></svg>
           Logout
@@ -621,30 +812,6 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
     </div>
   </div>
 </header>
-
-<!-- ─── Stats bar ─── -->
-<div class="stats-bar" id="statsBar">
-  <div class="stat-block">
-    <span class="su-label">Total Salary</span>
-    <span class="su-val" id="stTotalSalary">৳0</span>
-  </div>
-  <div class="stat-block">
-    <span class="su-label">Taxable Salary</span>
-    <span class="su-val red" id="stTaxableSalary">৳0</span>
-  </div>
-  <div class="stat-block">
-    <span class="su-label">Non-Taxable Amount</span>
-    <span class="su-val muted" id="stNonTaxable">৳0</span>
-  </div>
-  <div class="stat-block">
-    <span class="su-label">Total Tax Paid</span>
-    <span class="su-val grn" id="stTaxPaid">৳0</span>
-  </div>
-  <div class="stat-block">
-    <span class="su-label">Tax Need to Pay</span>
-    <span class="su-val red" id="stTaxDue">৳0</span>
-  </div>
-</div>
 
 <!-- ─── Sticky Tabs ─── -->
 <div class="tabs-wrapper" id="tabsWrapper">
@@ -662,76 +829,139 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
   <!-- ══ TAB 1: Salary Details ══ -->
   <div class="tab-pane" id="tab0">
     <div class="card">
-      <div class="sec-title">Salary &amp; Income</div>
-      <div class="salary-split">
-        <div class="period-col">
-          <div class="period-hdr"><span>Before Increment</span><span class="period-badge">9 MONTHS</span></div>
-          <div class="field"><label>Basic salary (annual)</label><input type="text" inputmode="numeric" id="bBasic" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field mt10"><label>House rent allowance (annual)</label><input type="text" inputmode="numeric" id="bHra" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field mt10"><label>Medical allowance (annual)</label><input type="text" inputmode="numeric" id="bMedical" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field mt10"><label>Conveyance allowance (annual)</label><input type="text" inputmode="numeric" id="bConveyance" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field mt10"><label id="bPfLbl">Provident fund: Employer Contribution (10% of basic)</label><input type="text" id="bPfDisplay" readonly tabindex="-1"></div>
+      <div class="sec-title">Overview</div>
+      <div class="stats-bar" id="statsBar">
+        <div class="stat-block">
+          <span class="su-label">Total Salary</span>
+          <span class="su-val" id="stTotalSalary">৳0</span>
         </div>
-        <div class="period-col">
-          <div class="period-hdr"><span>After Increment</span><span class="period-badge">3 MONTHS</span></div>
-          <div class="field"><label>Basic salary (annual)</label><input type="text" inputmode="numeric" id="aBasic" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field mt10"><label>House rent allowance (annual)</label><input type="text" inputmode="numeric" id="aHra" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field mt10"><label>Medical allowance (annual)</label><input type="text" inputmode="numeric" id="aMedical" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field mt10"><label>Conveyance allowance (annual)</label><input type="text" inputmode="numeric" id="aConveyance" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field mt10"><label id="aPfLbl">Provident fund: Employer Contribution (10% of basic)</label><input type="text" id="aPfDisplay" readonly tabindex="-1"></div>
+        <div class="stat-block">
+          <span class="su-label">Taxable Salary</span>
+          <span class="su-val red" id="stTaxableSalary">৳0</span>
+        </div>
+        <div class="stat-block">
+          <span class="su-label">Non-Taxable Amount</span>
+          <span class="su-val muted" id="stNonTaxable">৳0</span>
+        </div>
+        <div class="stat-block">
+          <span class="su-label">Total Tax Paid</span>
+          <span class="su-val grn" id="stTaxPaid">৳0</span>
+        </div>
+        <div class="stat-block">
+          <span class="su-label">Tax Need to Pay</span>
+          <span class="su-val red" id="stTaxDue">৳0</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div class="sec-title" style="margin:0">Salary &amp; Income</div>
+        <div class="fest-source">
+          <label><input type="radio" name="salaryMode" value="basic" checked onchange="onSalaryModeChange('basic')"><span>Basic</span></label>
+          <label><input type="radio" name="salaryMode" value="details" onchange="onSalaryModeChange('details')"><span>Details</span></label>
         </div>
       </div>
 
-      <div class="sub-title">Festival Bonuses</div>
-      <p style="font-size:11px;color:#666;margin-bottom:12px">Select a period to auto-fill 1 month's basic salary (basic ÷ 12), or choose Manual.</p>
-      <div class="fest-row">
-        <div style="min-width:130px">
-          <div class="fest-lbl">Festival Bonus 1</div>
-          <div class="fest-source">
-            <label><input type="radio" name="fest1" value="before" checked onchange="onFestChange(1)"><span>Before</span></label>
-            <label><input type="radio" name="fest1" value="after" onchange="onFestChange(1)"><span>After</span></label>
-            <label><input type="radio" name="fest1" value="manual" onchange="onFestChange(1)"><span>Manual</span></label>
+      <!-- ── Basic Mode ── -->
+      <div id="basicSection">
+        <div class="g2">
+          <div class="field"><label>Basic salary (annual)</label><input type="text" inputmode="numeric" id="sbBasic" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="field"><label>House rent allowance (annual)</label><input type="text" inputmode="numeric" id="sbHra" value="0" oninput="onNumInput(this);calc()"></div>
+        </div>
+        <div class="g2 mt10">
+          <div class="field"><label>Medical allowance (annual)</label><input type="text" inputmode="numeric" id="sbMedical" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="field"><label>Conveyance allowance (annual)</label><input type="text" inputmode="numeric" id="sbConveyance" value="0" oninput="onNumInput(this);calc()"></div>
+        </div>
+        <div class="field mt10">
+          <label id="sbPfLbl">Provident fund: Employer Contribution (10% of basic)</label>
+          <input type="text" id="sbPfDisplay" readonly tabindex="-1">
+        </div>
+        <div class="sub-title">Festival Bonuses</div>
+        <p class="field-note" style="font-size:13px;margin-bottom:12px">Auto-calculated as 1 month's basic salary (annual ÷ 12) each.</p>
+        <div class="g2">
+          <div class="field"><label>Festival Bonus 1</label><input type="text" id="sbFest1" readonly tabindex="-1"></div>
+          <div class="field"><label>Festival Bonus 2</label><input type="text" id="sbFest2" readonly tabindex="-1"></div>
+        </div>
+        <div class="sub-title">Allowances &amp; Bonuses</div>
+        <div class="g2">
+          <div class="field">
+            <label>Leave Fare Assistance</label>
+            <input type="text" inputmode="numeric" id="sbLfa" value="0" oninput="onNumInput(this);calc()">
           </div>
-        </div>
-        <div class="fest-val-wrap">
-          <label id="fest1Hint">Auto — before basic ÷ 12</label>
-          <input type="text" inputmode="numeric" id="fest1Val" value="0" readonly oninput="onNumInput(this);calc()">
-        </div>
-      </div>
-      <div class="fest-row">
-        <div style="min-width:130px">
-          <div class="fest-lbl">Festival Bonus 2</div>
-          <div class="fest-source">
-            <label><input type="radio" name="fest2" value="before" onchange="onFestChange(2)"><span>Before</span></label>
-            <label><input type="radio" name="fest2" value="after" checked onchange="onFestChange(2)"><span>After</span></label>
-            <label><input type="radio" name="fest2" value="manual" onchange="onFestChange(2)"><span>Manual</span></label>
-          </div>
-        </div>
-        <div class="fest-val-wrap">
-          <label id="fest2Hint">Auto — after basic ÷ 12</label>
-          <input type="text" inputmode="numeric" id="fest2Val" value="0" readonly oninput="onNumInput(this);calc()">
         </div>
       </div>
 
-      <div class="sub-title">Allowances &amp; Bonuses</div>
-      <div class="fest-row">
-        <div style="min-width:160px">
-          <div class="fest-lbl">Leave Fare Assistance</div>
-          <div class="fest-source">
-            <label><input type="radio" name="lfaMode" value="auto" checked onchange="onLfaChange()"><span>Annual</span></label>
-            <label><input type="radio" name="lfaMode" value="manual" onchange="onLfaChange()"><span>Manual</span></label>
+      <!-- ── Details Mode ── -->
+      <div id="detailsSection" style="display:none">
+        <div class="salary-split">
+          <div class="period-col">
+            <div class="period-hdr"><span>Before Increment</span><span class="period-badge">9 MONTHS</span></div>
+            <div class="field"><label>Basic salary (annual)</label><input type="text" inputmode="numeric" id="bBasic" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field mt10"><label>House rent allowance (annual)</label><input type="text" inputmode="numeric" id="bHra" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field mt10"><label>Medical allowance (annual)</label><input type="text" inputmode="numeric" id="bMedical" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field mt10"><label>Conveyance allowance (annual)</label><input type="text" inputmode="numeric" id="bConveyance" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field mt10"><label id="bPfLbl">Provident fund: Employer Contribution (10% of basic)</label><input type="text" id="bPfDisplay" readonly tabindex="-1"></div>
+          </div>
+          <div class="period-col">
+            <div class="period-hdr"><span>After Increment</span><span class="period-badge">3 MONTHS</span></div>
+            <div class="field"><label>Basic salary (annual)</label><input type="text" inputmode="numeric" id="aBasic" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field mt10"><label>House rent allowance (annual)</label><input type="text" inputmode="numeric" id="aHra" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field mt10"><label>Medical allowance (annual)</label><input type="text" inputmode="numeric" id="aMedical" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field mt10"><label>Conveyance allowance (annual)</label><input type="text" inputmode="numeric" id="aConveyance" value="0" oninput="onNumInput(this);calc()"></div>
+            <div class="field mt10"><label id="aPfLbl">Provident fund: Employer Contribution (10% of basic)</label><input type="text" id="aPfDisplay" readonly tabindex="-1"></div>
           </div>
         </div>
-        <div class="fest-val-wrap" id="lfaBasicWrap">
-          <label>Previous year's annual basic</label>
-          <input type="text" inputmode="numeric" id="lfaPrevBasic" value="0" oninput="onNumInput(this);syncLfaAuto();calc()">
+        <div class="sub-title">Festival Bonuses</div>
+        <p class="field-note" style="font-size:13px;margin-bottom:12px">Select a period to auto-fill 1 month's basic salary (basic ÷ 12), or choose Manual.</p>
+        <div class="fest-row">
+          <div style="min-width:130px">
+            <div class="fest-lbl">Festival Bonus 1</div>
+            <div class="fest-source">
+              <label><input type="radio" name="fest1" value="before" checked onchange="onFestChange(1)"><span>Before</span></label>
+              <label><input type="radio" name="fest1" value="after" onchange="onFestChange(1)"><span>After</span></label>
+              <label><input type="radio" name="fest1" value="manual" onchange="onFestChange(1)"><span>Manual</span></label>
+            </div>
+          </div>
+          <div class="fest-val-wrap">
+            <label id="fest1Hint">Auto — before basic ÷ 12</label>
+            <input type="text" inputmode="numeric" id="fest1Val" value="0" readonly oninput="onNumInput(this);calc()">
+          </div>
         </div>
-        <div class="fest-val-wrap">
-          <label id="lfaHint">LFA (1 month = annual ÷ 12)</label>
-          <input type="text" inputmode="numeric" id="lfa" value="0" readonly oninput="onNumInput(this);calc()">
+        <div class="fest-row">
+          <div style="min-width:130px">
+            <div class="fest-lbl">Festival Bonus 2</div>
+            <div class="fest-source">
+              <label><input type="radio" name="fest2" value="before" onchange="onFestChange(2)"><span>Before</span></label>
+              <label><input type="radio" name="fest2" value="after" checked onchange="onFestChange(2)"><span>After</span></label>
+              <label><input type="radio" name="fest2" value="manual" onchange="onFestChange(2)"><span>Manual</span></label>
+            </div>
+          </div>
+          <div class="fest-val-wrap">
+            <label id="fest2Hint">Auto — after basic ÷ 12</label>
+            <input type="text" inputmode="numeric" id="fest2Val" value="0" readonly oninput="onNumInput(this);calc()">
+          </div>
+        </div>
+        <div class="sub-title">Allowances &amp; Bonuses</div>
+        <div class="fest-row">
+          <div style="min-width:160px">
+            <div class="fest-lbl">Leave Fare Assistance</div>
+            <div class="fest-source">
+              <label><input type="radio" name="lfaMode" value="auto" checked onchange="onLfaChange()"><span>Annual</span></label>
+              <label><input type="radio" name="lfaMode" value="manual" onchange="onLfaChange()"><span>Manual</span></label>
+            </div>
+          </div>
+          <div class="fest-val-wrap" id="lfaBasicWrap">
+            <label>Previous year's annual basic</label>
+            <input type="text" inputmode="numeric" id="lfaPrevBasic" value="0" oninput="onNumInput(this);syncLfaAuto();calc()">
+          </div>
+          <div class="fest-val-wrap">
+            <label id="lfaHint">LFA (1 month = annual ÷ 12)</label>
+            <input type="text" inputmode="numeric" id="lfa" value="0" readonly oninput="onNumInput(this);calc()">
+          </div>
         </div>
       </div>
 
+      <!-- ── Always visible ── -->
       <div class="g2 mt12">
         <div class="field">
           <label>Annual performance bonus</label>
@@ -743,15 +973,6 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
         </div>
       </div>
 
-      <div class="income-summary">
-        <div class="inc-item"><div class="inc-lbl">Before (9 mo)</div><div class="inc-val" id="incBefore">৳0</div></div>
-        <div class="inc-item"><div class="inc-lbl">After (3 mo)</div><div class="inc-val" id="incAfter">৳0</div></div>
-        <div class="inc-item"><div class="inc-lbl">Festival bonuses</div><div class="inc-val" id="incFest">৳0</div></div>
-        <div class="inc-item"><div class="inc-lbl">Leave fare</div><div class="inc-val" id="incLfa">৳0</div></div>
-        <div class="inc-item"><div class="inc-lbl">Performance</div><div class="inc-val" id="incPerf">৳0</div></div>
-        <div class="inc-item"><div class="inc-lbl">Profit share</div><div class="inc-val" id="incProfit">৳0</div></div>
-        <div class="inc-item inc-total"><div class="inc-lbl">Total income</div><div class="inc-val" id="incTotal">৳0</div></div>
-      </div>
     </div>
   </div>
 
@@ -761,7 +982,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
     <!-- Suggestion card FIRST -->
     <div class="suggest-card">
       <div class="suggest-header">
-        <div class="suggest-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+        <div class="suggest-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div>
         <div>
           <div class="suggest-title">Investment Suggestion</div>
           <div class="suggest-subtitle">How much more to invest to maximize your tax rebate</div>
@@ -789,7 +1010,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
 
       <!-- Empty state -->
       <div class="inv-empty" id="invEmptyState">
-        <span style="font-size:32px;line-height:1;display:block;margin-bottom:8px">৳</span>
+        <span style="font-size:34px;line-height:1;display:block;margin-bottom:8px">৳</span>
         No investments added yet. Click <strong>Add Investment</strong> to get started.
       </div>
 
@@ -818,7 +1039,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
         <div class="inv-row-header open"><div class="inv-row-label">Life Insurance</div><button class="inv-row-remove" onclick="removeInv('life')" title="Remove"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
         <div class="inv-row-fields">
           <div class="field"><label>Annual premium</label><input type="text" inputmode="numeric" id="invLife" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field"><label>Eligible %</label><input type="text" id="invLifePctDisplay" readonly tabindex="-1"><span class="field-note">Configure % in settings ⚙️</span></div>
+          <div class="field"><label>Eligible %</label><input type="text" id="invLifePctDisplay" readonly tabindex="-1"></div>
           <div class="field"><label>Eligible amount (auto)</label><input type="text" id="invLifeElig" readonly tabindex="-1"></div>
         </div>
       </div>
@@ -838,7 +1059,7 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
         <div class="inv-row-header open"><div class="inv-row-label">Share Market / Stocks</div><button class="inv-row-remove" onclick="removeInv('stocks')" title="Remove"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
         <div class="inv-row-fields">
           <div class="field"><label>Amount</label><input type="text" inputmode="numeric" id="invStocks" value="0" oninput="onNumInput(this);calc()"></div>
-          <div class="field"><label>Limit</label><input type="text" value="No Specific Limit" readonly tabindex="-1" style="color:#888;font-size:13px"></div>
+          <div class="field"><label>Limit</label><input type="text" value="No Specific Limit" readonly tabindex="-1" style="color:#94A3B8;font-size:15px"></div>
           <div class="field"><label>Eligible amount (100% of input)</label><input type="text" id="invStocksElig" readonly tabindex="-1"></div>
         </div>
       </div>
@@ -867,23 +1088,43 @@ header{background:#e2136e;padding:10px 20px;display:flex;align-items:center;gap:
   <!-- ══ TAB 3: Tax Details ══ -->
   <div class="tab-pane" id="tab2" style="display:none">
     <div class="card">
-      <div class="sec-title">Office Tax Deduction</div>
-      <p style="font-size:11px;color:#666;margin-bottom:12px">Monthly tax deducted at source by employer</p>
-      <div class="g6">
-        <div class="month-block"><label>Jul</label><input type="text" inputmode="numeric" id="mJul" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Aug</label><input type="text" inputmode="numeric" id="mAug" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Sep</label><input type="text" inputmode="numeric" id="mSep" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Oct</label><input type="text" inputmode="numeric" id="mOct" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Nov</label><input type="text" inputmode="numeric" id="mNov" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Dec</label><input type="text" inputmode="numeric" id="mDec" value="0" oninput="onNumInput(this);calc()"></div>
+      <div class="sec-hdr-row">
+        <div>
+          <div class="sec-title">Office Tax Deduction</div>
+          <p id="officeTaxDesc">Annual tax deducted at source by employer</p>
+        </div>
+        <div class="fest-source" style="flex-shrink:0;align-self:flex-start">
+          <label><input type="radio" name="officeTaxMode" value="annually" checked onchange="onOfficeTaxMode()"><span>Annually</span></label>
+          <label><input type="radio" name="officeTaxMode" value="monthly" onchange="onOfficeTaxMode()"><span>Monthly</span></label>
+        </div>
       </div>
-      <div class="g6 mt10">
-        <div class="month-block"><label>Jan</label><input type="text" inputmode="numeric" id="mJan" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Feb</label><input type="text" inputmode="numeric" id="mFeb" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Mar</label><input type="text" inputmode="numeric" id="mMar" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Apr</label><input type="text" inputmode="numeric" id="mApr" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>May</label><input type="text" inputmode="numeric" id="mMay" value="0" oninput="onNumInput(this);calc()"></div>
-        <div class="month-block"><label>Jun</label><input type="text" inputmode="numeric" id="mJun" value="0" oninput="onNumInput(this);calc()"></div>
+
+      <!-- Annual mode (default) -->
+      <div id="officeTaxAnnual">
+        <div class="field">
+          <label>Total annual tax deducted by office</label>
+          <input type="text" inputmode="numeric" id="mAnnual" value="0" oninput="onNumInput(this);calc()">
+        </div>
+      </div>
+
+      <!-- Monthly mode -->
+      <div id="officeTaxMonthly" style="display:none">
+        <div class="g6">
+          <div class="month-block"><label>Jul</label><input type="text" inputmode="numeric" id="mJul" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Aug</label><input type="text" inputmode="numeric" id="mAug" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Sep</label><input type="text" inputmode="numeric" id="mSep" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Oct</label><input type="text" inputmode="numeric" id="mOct" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Nov</label><input type="text" inputmode="numeric" id="mNov" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Dec</label><input type="text" inputmode="numeric" id="mDec" value="0" oninput="onNumInput(this);calc()"></div>
+        </div>
+        <div class="g6 mt10">
+          <div class="month-block"><label>Jan</label><input type="text" inputmode="numeric" id="mJan" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Feb</label><input type="text" inputmode="numeric" id="mFeb" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Mar</label><input type="text" inputmode="numeric" id="mMar" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Apr</label><input type="text" inputmode="numeric" id="mApr" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>May</label><input type="text" inputmode="numeric" id="mMay" value="0" oninput="onNumInput(this);calc()"></div>
+          <div class="month-block"><label>Jun</label><input type="text" inputmode="numeric" id="mJun" value="0" oninput="onNumInput(this);calc()"></div>
+        </div>
       </div>
 
       <div class="sub-title">Others Deduction</div>
@@ -1060,6 +1301,8 @@ function togglePwVis(){
 let config={nonTaxable:500000,rebatePct:3,rebateCeiling:1000000,dpsMax:120000,sanchMax:500000,lifePct:10,pfRate:10,govSecMax:500000,taxYear:'2025',gender:'male'};
 // Which investment rows are visible
 let invEnabled={dps:false,sanch:false,life:false,govSec:false,stocks:false};
+// Salary input mode: 'basic' (default) or 'details'
+let salaryMode='basic';
 
 const SLAB_PRESETS={
   '2025':[
@@ -1091,6 +1334,14 @@ let _dirty=false;
 function markDirty(){if(_dirty)return;_dirty=true;$('resetBtn').disabled=false;}
 function openResetModal(){$('resetModal').classList.add('open');document.body.style.overflow='hidden';}
 function closeResetModal(){$('resetModal').classList.remove('open');document.body.style.overflow='';}
+
+// ── Salary mode toggle ──
+function onSalaryModeChange(mode){
+  salaryMode=mode;
+  $('basicSection').style.display=mode==='basic'?'block':'none';
+  $('detailsSection').style.display=mode==='details'?'block':'none';
+  markDirty();calc();
+}
 function confirmReset(){closeResetModal();doReset();}
 
 // ── Hamburger menu ──
@@ -1112,13 +1363,34 @@ function confirmLogout(){
   _gel('pwError').textContent='';
   _gel('pwInput').focus();
 }
+
+// ── Theme ──
+function applyTheme(mode){
+  document.body.classList.toggle('light-mode', mode==='light');
+  localStorage.setItem('_bktheme', mode);
+}
+function toggleTheme(){
+  const isLight=document.body.classList.contains('light-mode');
+  applyTheme(isLight?'dark':'light');
+}
+// Init theme from localStorage on page load
+(function initTheme(){
+  if(localStorage.getItem('_bktheme')==='light') applyTheme('light');
+})();
 function doReset(){
   const ids=['bBasic','bHra','bMedical','bConveyance','aBasic','aHra','aMedical','aConveyance',
     'lfa','lfaPrevBasic','annualPerf','profitShare',
+    'sbBasic','sbHra','sbMedical','sbConveyance','sbLfa',
     'invDps','invSanch','invLife','invGovSec','invStocks',
     'mJul','mAug','mSep','mOct','mNov','mDec','mJan','mFeb','mMar','mApr','mMay','mJun',
     'profitTaxAmt','perfBonusTax','invTDSAmt'];
   ids.forEach(id=>{const el=$(id);if(el)el.value='0';});
+  setVal('sbPfDisplay',0);setVal('sbFest1',0);setVal('sbFest2',0);
+  // Reset to basic mode
+  salaryMode='basic';
+  document.querySelector('input[name="salaryMode"][value="basic"]').checked=true;
+  $('basicSection').style.display='block';
+  $('detailsSection').style.display='none';
   document.querySelector('input[name="fest1"][value="before"]').checked=true;
   document.querySelector('input[name="fest2"][value="after"]').checked=true;
   document.querySelector('input[name="lfaMode"][value="auto"]').checked=true;
@@ -1175,15 +1447,6 @@ function getDynLabel(i,limit){
   return`Next ${fmtBD(limit)}`;
 }
 
-// ─── Sticky positioning ───────────────────────────────────────────────────────
-function updateStickyPositions(){
-  const headerH=document.querySelector('header').offsetHeight;
-  const sb=$('statsBar');
-  sb.style.top=headerH+'px';
-  const tw=$('tabsWrapper');
-  tw.style.top=(headerH+sb.offsetHeight)+'px';
-}
-window.addEventListener('resize',updateStickyPositions);
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 function switchTab(n){
@@ -1364,6 +1627,17 @@ function updateInvEmptyState(){
 }
 $('invPickerModal').addEventListener('click',e=>{if(e.target===$('invPickerModal'))closeInvModal();});
 
+// ─── Office Tax Mode (Annually / Monthly) ────────────────────────────────────
+function onOfficeTaxMode(){
+  const isAnnual=document.querySelector('input[name="officeTaxMode"]:checked').value==='annually';
+  $('officeTaxAnnual').style.display=isAnnual?'block':'none';
+  $('officeTaxMonthly').style.display=isAnnual?'none':'block';
+  $('officeTaxDesc').textContent=isAnnual
+    ?'Annual tax deducted at source by employer'
+    :'Monthly tax deducted at source by employer';
+  calc();
+}
+
 // ─── Car AIT ─────────────────────────────────────────────────────────────────
 function toggleCarAIT(){
   $('carAITSection').style.display=$('chkCarAIT').checked?'block':'none';
@@ -1394,44 +1668,50 @@ function renderDeds(){
     d.innerHTML=`<div class="field"><label>Additional tax deduction ${i+1}</label>
       <input type="text" inputmode="numeric" value="${fmtVal}"
         oninput="onNumInput(this);additionalDeds[${i}]=parseFloat(this.value.replace(/,/g,''))||0;calc()"></div>
-      <button class="remove-ded" onclick="removeDed(${i})">✕</button>`;
+      <button class="remove-ded" onclick="removeDed(${i})" title="Remove"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>`;
     c.appendChild(d);
   });
 }
 
 // ─── Main calculation ─────────────────────────────────────────────────────────
 function calc(){
-  syncFestAuto();
-  syncLfaAuto();
   const PF_RATE=config.pfRate/100;
+  let _bB,_aB,_bH,_aH,_bM,_aM,_bC,_aC,_lfa,_fest1,_fest2;
 
-  $('bPfLbl').textContent=`Provident fund: Employer Contribution (${config.pfRate}% of basic)`;
-  $('aPfLbl').textContent=`Provident fund: Employer Contribution (${config.pfRate}% of basic)`;
+  if(salaryMode==='basic'){
+    _bB=_aB=v('sbBasic'); _bH=_aH=v('sbHra');
+    _bM=_aM=v('sbMedical'); _bC=_aC=v('sbConveyance');
+    _lfa=v('sbLfa');
+    _fest1=_fest2=Math.round(_bB/12);
+    $('sbPfLbl').textContent=`Provident fund: Employer Contribution (${config.pfRate}% of basic)`;
+    setVal('sbPfDisplay',_bB*PF_RATE);
+    setVal('sbFest1',_fest1); setVal('sbFest2',_fest2);
+  } else {
+    syncFestAuto(); syncLfaAuto();
+    _bB=v('bBasic'); _aB=v('aBasic');
+    _bH=v('bHra');   _aH=v('aHra');
+    _bM=v('bMedical'); _aM=v('aMedical');
+    _bC=v('bConveyance'); _aC=v('aConveyance');
+    _lfa=v('lfa'); _fest1=v('fest1Val'); _fest2=v('fest2Val');
+    const pfLbl=`Provident fund: Employer Contribution (${config.pfRate}% of basic)`;
+    $('bPfLbl').textContent=pfLbl; $('aPfLbl').textContent=pfLbl;
+    setVal('bPfDisplay',_bB*PF_RATE/12*B_MONTHS);
+    setVal('aPfDisplay',_aB*PF_RATE/12*A_MONTHS);
+  }
 
-  const bPfEmp=v('bBasic')*PF_RATE/12*B_MONTHS;
-  const aPfEmp=v('aBasic')*PF_RATE/12*A_MONTHS;
-  setVal('bPfDisplay',bPfEmp);
-  setVal('aPfDisplay',aPfEmp);
+  const bPfEmp=_bB*PF_RATE/12*B_MONTHS, aPfEmp=_aB*PF_RATE/12*A_MONTHS;
 
-  const bBasic9=v('bBasic')/12*B_MONTHS,bHra9=v('bHra')/12*B_MONTHS;
-  const bMed9=v('bMedical')/12*B_MONTHS,bConv9=v('bConveyance')/12*B_MONTHS;
+  const bBasic9=_bB/12*B_MONTHS, bHra9=_bH/12*B_MONTHS;
+  const bMed9=_bM/12*B_MONTHS,   bConv9=_bC/12*B_MONTHS;
   const beforeTotal=bBasic9+bHra9+bMed9+bConv9+bPfEmp;
 
-  const aBasic3=v('aBasic')/12*A_MONTHS,aHra3=v('aHra')/12*A_MONTHS;
-  const aMed3=v('aMedical')/12*A_MONTHS,aConv3=v('aConveyance')/12*A_MONTHS;
+  const aBasic3=_aB/12*A_MONTHS, aHra3=_aH/12*A_MONTHS;
+  const aMed3=_aM/12*A_MONTHS,   aConv3=_aC/12*A_MONTHS;
   const afterTotal=aBasic3+aHra3+aMed3+aConv3+aPfEmp;
 
-  const fest1=v('fest1Val'),fest2=v('fest2Val'),festTotal=fest1+fest2;
-  const lfa=v('lfa'),perf=v('annualPerf'),profit=v('profitShare');
+  const fest1=_fest1, fest2=_fest2, festTotal=fest1+fest2;
+  const lfa=_lfa, perf=v('annualPerf'), profit=v('profitShare');
   const totalIncome=beforeTotal+afterTotal+festTotal+lfa+perf+profit;
-
-  $('incBefore').textContent=fmt(beforeTotal);
-  $('incAfter').textContent =fmt(afterTotal);
-  $('incFest').textContent  =fmt(festTotal);
-  $('incLfa').textContent   =fmt(lfa);
-  $('incPerf').textContent  =fmt(perf);
-  $('incProfit').textContent=fmt(profit);
-  $('incTotal').textContent =fmt(totalIncome);
 
   const nonTaxable=Math.min(totalIncome/3,config.nonTaxable);
   const taxableIncome=Math.max(0,totalIncome-nonTaxable);
@@ -1487,8 +1767,9 @@ function calc(){
   }
   const netTax=Math.max(0,grossTax-rebateAmt);
 
+  const isOfficeTaxAnnual=document.querySelector('input[name="officeTaxMode"]:checked').value==='annually';
   const months=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
-  const officeTax12=months.reduce((s,m)=>s+v('m'+m),0);
+  const officeTax12=isOfficeTaxAnnual?v('mAnnual'):months.reduce((s,m)=>s+v('m'+m),0);
   const profitTaxDed=v('profitTaxAmt');
   const perfBonusTaxDed=v('perfBonusTax');
   const addDedSum=additionalDeds.reduce((s,d)=>s+d,0);
@@ -1568,7 +1849,7 @@ function calc(){
     <tr><td>Investment Rebate</td><td class="c-yel">− ${fmt(rebateAmt)}</td></tr>
     <tr class="subtotal"><td>Net Tax Liability</td><td>${fmt(netTax)}</td></tr>
     ${totalDed>0?`<tr class="section-hdr"><td colspan="2">Deductions Already Paid</td></tr>`:''}
-    ${officeTax12>0?`<tr><td>Office salary tax (12 months)</td><td class="c-grn">− ${fmt(officeTax12)}</td></tr>`:''}
+    ${officeTax12>0?`<tr><td>Office salary tax (${isOfficeTaxAnnual?'annual':'12 months'})</td><td class="c-grn">− ${fmt(officeTax12)}</td></tr>`:''}
     ${profitRow}${perfRow}${addDedRows}${carRow}${tdsRow}
     ${totalDed>0?`<tr class="subtotal"><td>Total Tax Paid</td><td>${fmt(totalDed)}</td></tr>`:''}
     ${minTaxRow}
@@ -1606,7 +1887,7 @@ function calc(){
 
   window._d={totalIncome,nonTaxable,taxableIncome,grossTax,totalInvest,rebateAmt,netTax,
     totalDed,taxPayable:finalTaxPayable,minTaxApplies,brkRows,maxRebatable,investRebate,ceiling,
-    officeTax12,profitTaxDed,perfBonusTaxDed,addDedSum,carAIT,invTDS,
+    officeTax12,isOfficeTaxAnnual,profitTaxDed,perfBonusTaxDed,addDedSum,carAIT,invTDS,
     additionalDeds:[...additionalDeds],beforeTotal,afterTotal,festTotal,
     lfa,perf,profit,pfBothSides,dpsElig,sanchElig,lifeElig};
 }
@@ -1636,7 +1917,7 @@ function updateSuggestion(maxRebatable,rebateAmt,investRebate,totalInvest,ceilin
   $('sg_investNeeded').textContent=`Need ${fmt(additionalNeeded)} more`;
   tip.className='suggest-tip';
   tip.innerHTML=`Invest an additional <strong>${fmt(additionalNeeded)}</strong> to claim the full rebate and save <strong>${fmt(rebateGap)}</strong> in taxes.`
-    +(maxRebatable>ceiling?`<br><span style="color:#ff9800;font-size:11px">Note: Rebate ceiling of ${fmt(ceiling)} is the binding constraint.</span>`:'');
+    +(maxRebatable>ceiling?`<br><span style="color:#ff9800;font-size:13px">Note: Rebate ceiling of ${fmt(ceiling)} is the binding constraint.</span>`:'');
 }
 
 // ─── Export to Excel ──────────────────────────────────────────────────────────
@@ -1664,7 +1945,7 @@ function exportExcel(){
     ['FINAL SETTLEMENT'],
     ['Total Taxable Amount',n2(d.taxableIncome||0)],['Gross Tax',n2(d.grossTax||0)],
     ['Investment Rebate',-n2(d.rebateAmt||0)],['Net Tax Liability',n2(d.netTax||0)],
-    ...(d.officeTax12>0?[['Office Salary Tax (12 mo)',-n2(d.officeTax12)]]:[]),
+    ...(d.officeTax12>0?[[`Office Salary Tax (${d.isOfficeTaxAnnual?'Annual':'12 mo'})`,-n2(d.officeTax12)]]:[]),
     ...(d.profitTaxDed>0?[['Profit Share Tax Deduction',-n2(d.profitTaxDed)]]:[]),
     ...(d.perfBonusTaxDed>0?[['Performance Bonus Tax Deduction',-n2(d.perfBonusTaxDed)]]:[]),
     ...adds.filter(a=>a>0).map((a,i)=>[`Additional deduction ${i+1}`,-n2(a)]),
@@ -1683,7 +1964,6 @@ function exportExcel(){
 }
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
-updateStickyPositions();
 onFestChange(1);onFestChange(2);onLfaChange();calc();
 </script>
 </body>

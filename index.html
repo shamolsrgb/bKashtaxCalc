@@ -26,7 +26,8 @@
   --t-md:20px;--t-lg:22px;--t-xl:26px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#121212;color:#EEEEEE;font-family:'Quicksand',sans-serif;font-size:var(--t-base);line-height:1.5;min-height:100vh}
+body{background:#0b0f1a;color:#EEEEEE;font-family:'Quicksand',sans-serif;font-size:var(--t-base);line-height:1.5;min-height:100vh}
+#appCanvas{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:-1;pointer-events:none}
 
 /* ── Header ── */
 header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200}
@@ -53,7 +54,7 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 @media(max-width:500px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
 
 /* ── Sticky tabs ── */
-.tabs-wrapper{position:sticky;top:58px;z-index:180;background:#121212;border-bottom:1px solid #2A2A2A}
+.tabs-wrapper{position:sticky;top:58px;z-index:180;background:rgba(11,15,26,.85);border-bottom:1px solid rgba(255,255,255,.09);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .tabs-wrapper-inner{max-width:960px;margin:0 auto;padding:0 16px}
 .tabs-nav{display:flex;gap:4px;padding:10px 0 0}
 .tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:#94A3B8;padding:9px 20px;font-size:var(--t-base);font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:-1px;white-space:nowrap;line-height:1.3}
@@ -61,9 +62,9 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 .tab-btn.active{color:#2563eb;border-bottom-color:#2563eb}
 
 /* ── Modal ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:999;padding:16px}
-.modal-overlay.open{display:flex}
-.modal{background:#1E1E1E;border-radius:12px;width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;border:1px solid #2E2E2E;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility .25s ease}
+.modal-overlay.open{opacity:1;visibility:visible;pointer-events:auto}
+.modal{background:rgba(20,24,36,.80);border-radius:12px;width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.09);box-shadow:0 24px 64px rgba(0,0,0,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #2A2A2A;flex-shrink:0}
 .modal-hdr h2{font-size:var(--t-md);font-weight:700;line-height:1.3}
 .modal-close{background:none;border:1px solid #3a3a3a;border-radius:6px;color:#94A3B8;width:30px;height:30px;cursor:pointer;font-size:var(--t-base);display:flex;align-items:center;justify-content:center;transition:all .2s}
@@ -84,7 +85,7 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 
 /* ── Layout ── */
 .container{max-width:960px;margin:0 auto;padding:14px 16px 32px}
-.card{background:#1E1E1E;border-radius:10px;padding:22px;margin-bottom:14px;border:1px solid #2A2A2A}
+.card{background:rgba(20,24,36,.72);border-radius:10px;padding:22px;margin-bottom:14px;border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .sec-title{font-size:var(--t-xs);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#94A3B8;margin-bottom:18px;line-height:1.4}
 .sub-title{font-size:var(--t-xs);font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94A3B8;margin:20px 0 14px;padding-bottom:8px;border-bottom:1px solid #2A2A2A;line-height:1.4}
 
@@ -105,7 +106,7 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 .field-note{font-size:var(--t-xs);color:#94A3B8;margin-top:3px;line-height:1.5;font-style:italic}
 
 /* ── Investment rows ── */
-.inv-row{background:#181818;border:1px solid #2A2A2A;border-radius:8px;padding:14px 16px;margin-bottom:10px}
+.inv-row{background:rgba(20,24,36,.55);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:14px 16px;margin-bottom:10px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .inv-row-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
 .inv-row-header.open{margin-bottom:14px}
 .inv-row-label{font-size:var(--t-sm);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#94A3B8;line-height:1.4}
@@ -228,7 +229,7 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 .btn-export svg{width:20px;height:20px;fill:#fff;flex-shrink:0}
 
 /* ── Suggestion card ── */
-.suggest-card{background:#0D1526;border:1px solid #1E3A6E;border-radius:10px;padding:20px;margin-bottom:14px}
+.suggest-card{background:rgba(13,21,38,.72);border:1px solid rgba(37,99,235,.25);border-radius:10px;padding:20px;margin-bottom:14px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .suggest-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .suggest-icon{width:34px;height:34px;background:rgba(37,99,235,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .suggest-icon svg{width:18px;height:18px;fill:#2563eb}
@@ -239,11 +240,11 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 .sg-item{background:#0A1020;border:1px solid #1E3055;border-radius:8px;padding:12px}
 .sg-item .s-lbl{font-size:var(--t-xs);color:#94A3B8;margin-bottom:5px;line-height:1.4}
 .sg-item .s-val{font-size:var(--t-md);font-weight:800;letter-spacing:-.3px;line-height:1.2}
-.s-grn{color:#4caf50}.s-org{color:#ff9800}.s-red{color:#e2136e}.s-def{color:#EEEEEE}
+.s-grn{color:#4caf50}.s-org{color:#ff9800}.s-red{color:#e2136e}.s-def{color:#FFFFFF}
 .progress-bar-wrap{background:#1A2A45;border-radius:6px;height:8px;overflow:hidden;margin-bottom:7px}
 .progress-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#2563eb,#60A5FA);transition:width .4s}
 .progress-label{display:flex;justify-content:space-between;font-size:var(--t-xs);color:#94A3B8;line-height:1.4}
-.suggest-tip{background:#0A1020;border:1px solid #1E3055;border-radius:8px;padding:11px 15px;font-size:var(--t-sm);color:#94A3B8;line-height:1.6;margin-top:12px}
+.suggest-tip{background:rgba(10,16,32,.72);border:1px solid rgba(30,48,85,.8);border-radius:8px;padding:11px 15px;font-size:var(--t-sm);color:#94A3B8;line-height:1.6;margin-top:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .suggest-tip strong{color:#2563eb}
 .suggest-tip.ok{border-color:#1a3a1a;background:#0f1f0f}
 .suggest-tip.ok strong{color:#4caf50}
@@ -313,14 +314,14 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 .ham-item{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:#EEEEEE;font-size:var(--t-sm);font-weight:600;padding:13px 16px;cursor:pointer;text-align:left;transition:background .15s;font-family:inherit}
 .ham-item:hover{background:#2A2A2A}
 .ham-item svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
-.ham-item.danger{color:#e2136e}
-.ham-item.danger:hover{background:rgba(226,19,110,.1)}
+.ham-item.danger{color:#f44336}
+.ham-item.danger:hover{background:rgba(244,67,54,.1)}
 .ham-divider{height:1px;background:#2E2E2E;margin:0}
 
 /* ── Logout modal ── */
 .logout-modal{max-width:400px}
-.logout-warn-icon{width:56px;height:56px;background:rgba(226,19,110,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
-.logout-warn-icon svg{width:26px;height:26px;fill:#e2136e}
+.logout-warn-icon{width:56px;height:56px;background:rgba(244,67,54,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.logout-warn-icon svg{width:26px;height:26px;fill:#f44336}
 
 /* ── Mobile: ≤ 600px ── */
 @media(max-width:600px){
@@ -379,8 +380,19 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 }
 
 /* ── Password gate ── */
-#pwGate{position:fixed;inset:0;background:#121212;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
-.pw-box{background:#1E1E1E;border:1px solid #2A2A2A;border-radius:16px;padding:40px 36px;width:100%;max-width:400px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+#pwGate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;background:#0b0f1a}
+.pw-theme-btn{position:absolute;top:16px;right:16px;z-index:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,transform .12s;color:#94A3B8}
+.pw-theme-btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.22)}
+.pw-theme-btn:active{transform:scale(0.9)}
+.pw-theme-btn svg{width:18px;height:18px;fill:currentColor;position:absolute;transition:opacity .2s,transform .25s}
+.pw-theme-btn .icon-moon{opacity:1;transform:scale(1) rotate(0deg)}
+.pw-theme-btn .icon-sun{opacity:0;transform:scale(0.6) rotate(90deg)}
+body.light-mode .pw-theme-btn{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.1);color:#6C757D}
+body.light-mode .pw-theme-btn:hover{background:rgba(0,0,0,.1);border-color:rgba(0,0,0,.18)}
+body.light-mode .pw-theme-btn .icon-moon{opacity:0;transform:scale(0.6) rotate(-90deg)}
+body.light-mode .pw-theme-btn .icon-sun{opacity:1;transform:scale(1) rotate(0deg)}
+#pwCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pw-box{background:rgba(20,24,36,.72);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:40px 36px;width:100%;max-width:400px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);position:relative;z-index:1}
 .pw-logo{width:56px;height:56px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-weight:900;color:#fff;font-size:20px;letter-spacing:-1px}
 .pw-box h2{font-size:22px;font-weight:700;color:#EEEEEE;margin-bottom:6px;line-height:1.3}
 .pw-box p{font-size:15px;color:#94A3B8;margin-bottom:28px;line-height:1.5}
@@ -411,7 +423,7 @@ body.light-mode .theme-tog-track:before{transform:translateX(16px);background:#f
 /* ════════════════════════════════════════
    LIGHT MODE OVERRIDES
    ════════════════════════════════════════ */
-body.light-mode{background:#F8F9FA;color:#1A1A1B}
+body.light-mode{background:#eef2ff;color:#1A1A1B}
 
 /* Stats bar */
 body.light-mode .stat-block{background:#F8F9FA;border-color:#E2E5E9}
@@ -422,13 +434,13 @@ body.light-mode .su-val.grn{color:#4caf50}
 body.light-mode .su-val.blue{color:#2563eb}
 
 /* Tabs */
-body.light-mode .tabs-wrapper{background:#F8F9FA;border-bottom-color:#D1D5DB}
+body.light-mode .tabs-wrapper{background:rgba(248,249,250,.85);border-bottom-color:rgba(0,0,0,.08)}
 body.light-mode .tab-btn{color:#6C757D}
 body.light-mode .tab-btn:hover{color:#1A1A1B}
 body.light-mode .tab-btn.active{color:#2563eb;border-bottom-color:#2563eb}
 
 /* Cards & layout */
-body.light-mode .card{background:#FFFFFF;border-color:#E2E5E9}
+body.light-mode .card{background:rgba(255,255,255,.72);border-color:rgba(0,0,0,.08)}
 body.light-mode .sec-title{color:#6C757D}
 body.light-mode .sub-title{color:#6C757D;border-bottom-color:#E2E5E9}
 
@@ -474,7 +486,7 @@ body.light-mode .month-block input{background:#F8F9FA;border-color:#D1D5DB;color
 body.light-mode .month-block input:not([readonly]):focus{border-color:#2563eb}
 
 /* Investment rows */
-body.light-mode .inv-row{background:#F8F9FA;border-color:#E2E5E9}
+body.light-mode .inv-row{background:rgba(248,249,250,.6);border-color:rgba(0,0,0,.07)}
 body.light-mode .inv-row-label{color:#6C757D}
 body.light-mode .inv-row-remove{border-color:rgba(239,68,68,.3);color:#ef4444}
 body.light-mode .inv-row-remove:hover{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,.1)}
@@ -482,14 +494,15 @@ body.light-mode .inv-empty{color:#6C757D}
 body.light-mode .inv-empty span{color:#9CA3AF}
 
 /* Suggest card */
-body.light-mode .suggest-card{background:#EEF2FF;border-color:#C7D2FE}
+body.light-mode .suggest-card{background:rgba(238,242,255,.72);border-color:rgba(199,210,254,.8)}
 body.light-mode .suggest-title{color:#1A1A1B}
 body.light-mode .suggest-subtitle{color:#6C757D}
 body.light-mode .sg-item{background:#FFFFFF;border-color:#DDE4FF}
 body.light-mode .sg-item .s-lbl{color:#6C757D}
+body.light-mode .s-def{color:#000000}
 body.light-mode .progress-bar-wrap{background:#DDE4FF}
 body.light-mode .progress-label{color:#6C757D}
-body.light-mode .suggest-tip{background:#FFFFFF;border-color:#DDE4FF;color:#374151}
+body.light-mode .suggest-tip{background:rgba(255,255,255,.72);border-color:rgba(221,228,255,.8);color:#374151}
 body.light-mode .suggest-tip.ok{background:#F0FAF0;border-color:#B2DFB2}
 
 /* Investment picker modal items */
@@ -536,13 +549,13 @@ body.light-mode .remove-ded{border-color:rgba(239,68,68,.3);color:#ef4444}
 body.light-mode .remove-ded:hover{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,.1)}
 
 /* Modals */
-body.light-mode .modal{background:#FFFFFF;border-color:#E2E5E9}
+body.light-mode .modal{background:rgba(255,255,255,.80);border-color:rgba(0,0,0,.08)}
 body.light-mode .modal-hdr{border-bottom-color:#E2E5E9}
 body.light-mode .modal-hdr h2{color:#1A1A1B}
 body.light-mode .modal-close{border-color:#D1D5DB;color:#6C757D}
 body.light-mode .modal-close:hover{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,.08)}
-body.light-mode .modal-body{background:#FFFFFF}
-body.light-mode .modal-ftr{border-top-color:#E2E5E9;background:#FFFFFF}
+body.light-mode .modal-body{background:transparent}
+body.light-mode .modal-ftr{border-top-color:rgba(0,0,0,.08);background:transparent}
 body.light-mode .modal-section-title{color:#6C757D;border-bottom-color:#E2E5E9}
 body.light-mode .btn-ghost{border-color:#D1D5DB;color:#6C757D}
 body.light-mode .btn-ghost:hover{border-color:#2563eb;color:#2563eb}
@@ -567,12 +580,12 @@ body.light-mode .ham-theme-row{color:#1A1A1B}
 body.light-mode .ham-theme-row:hover{background:#F1F3F5}
 body.light-mode .ham-item{color:#1A1A1B}
 body.light-mode .ham-item:hover{background:#F1F3F5}
-body.light-mode .ham-item.danger{color:#e2136e}
-body.light-mode .ham-item.danger:hover{background:rgba(226,19,110,.06)}
+body.light-mode .ham-item.danger{color:#f44336}
+body.light-mode .ham-item.danger:hover{background:rgba(244,67,54,.06)}
 body.light-mode .ham-divider{background:#E2E5E9}
 
 /* Password gate */
-body.light-mode #pwGate{background:#F8F9FA}
+body.light-mode #pwGate{background:#eef2ff}
 body.light-mode .pw-box{background:#FFFFFF;border-color:#E2E5E9;box-shadow:0 32px 80px rgba(0,0,0,.1)}
 body.light-mode .pw-box h2{color:#1A1A1B}
 body.light-mode .pw-box p{color:#6C757D}
@@ -582,7 +595,7 @@ body.light-mode .pw-eye{color:#6C757D}
 
 /* Reset / logout modal icons */
 body.light-mode .reset-warn-icon{background:rgba(226,19,110,.1)}
-body.light-mode .logout-warn-icon{background:rgba(226,19,110,.1)}
+body.light-mode .logout-warn-icon{background:rgba(244,67,54,.1)}
 
 /* Sec header row description */
 body.light-mode .sec-hdr-row p{color:#6C757D}
@@ -601,12 +614,62 @@ body.light-mode .field-note{color:#6C757D}
 body.light-mode .modal-body h3{color:#1A1A1B}
 body.light-mode .modal-body p{color:#4B5563}
 body.light-mode .modal-body p strong{color:#1A1A1B}
+
+/* ── Animations ── */
+/* Modal entrance */
+.modal{transform:scale(0.92) translateY(-14px);opacity:0;transition:transform .32s cubic-bezier(.34,1.56,.64,1),opacity .22s ease}
+.modal-overlay.open .modal{transform:scale(1) translateY(0);opacity:1}
+
+/* Tab pane slide-fade */
+@keyframes tabSlideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tab-pane.tab-entering{animation:tabSlideIn .8s ease both}
+
+/* Interactive button press */
+.btn-pink,.btn-ghost,.reset-btn,.cfg-btn,.pw-submit{transition:transform .12s ease,background .2s,border-color .2s,color .2s,opacity .2s}
+.btn-pink:active,.btn-ghost:active,.reset-btn:not(:disabled):active,.cfg-btn:active,.pw-submit:active{transform:scale(0.95)}
+.tab-btn:active{transform:translateY(1px)}
+.inv-row-remove:active{transform:scale(0.88)}
+.ham-item:active{transform:scaleX(0.97)}
+.modal-close:active{transform:scale(0.88)}
+
+/* Input focus glow */
+.field input:not([readonly]):focus,.field select:focus{box-shadow:0 0 0 3px rgba(37,99,235,.22)}
+body.light-mode .field input:not([readonly]):focus,body.light-mode .field select:focus{box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+
+/* Number count-up pop */
+@keyframes numPop{0%,100%{transform:scale(1)}45%{transform:scale(1.06)}}
+.num-pop{animation:numPop .3s ease}
+
+/* App fade-out overlay for logout */
+#appFadeout{position:fixed;inset:0;background:#0b0f1a;z-index:9998;opacity:0;pointer-events:none;transition:opacity .35s ease}
+#appFadeout.active{opacity:1;pointer-events:auto}
+
+/* Login gate animations */
+@keyframes pwGateIn{from{opacity:0}to{opacity:1}}
+@keyframes pwBoxSlideIn{from{opacity:0;transform:translateY(-22px) scale(0.94)}to{opacity:1;transform:none}}
+/* Logout: gate background dissolves over app first, then pw-box slides in */
+#pwGate.gate-show{animation:pwGateIn .42s ease both}
+#pwGate.gate-show .pw-box{animation:pwBoxSlideIn .5s .38s cubic-bezier(.34,1.56,.64,1) both}
+/* Initial page load: background already visible, only pw-box animates */
+#pwGate.pw-box-enter .pw-box{animation:pwBoxSlideIn .5s ease both}
+
+/* Fully optimized celebration */
+@keyframes successGlow{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0);border-color:rgba(37,99,235,.25)}50%{box-shadow:0 0 32px rgba(76,175,80,.3),inset 0 0 24px rgba(76,175,80,.06);border-color:rgba(76,175,80,.65)}}
+@keyframes tipBounce{0%{transform:scale(0.96)}40%{transform:scale(1.05)}70%{transform:scale(0.98)}100%{transform:scale(1)}}
+.suggest-card.optimized{animation:successGlow 1.1s ease 3}
+.suggest-tip.ok.tip-bounce{animation:tipBounce .45s ease}
 </style>
 </head>
 <body>
+<canvas id="appCanvas"></canvas>
 
 <!-- ─── Password Gate ─── -->
 <div id="pwGate">
+  <canvas id="pwCanvas"></canvas>
+  <button class="pw-theme-btn" onclick="toggleTheme()" title="Toggle theme" id="pwThemeBtn">
+    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7zm0-5a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 17a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zM4.22 4.22a1 1 0 0 1 1.42 0l.7.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 0-1.42zm13.02 13.02a1 1 0 0 1 1.42 0l.7.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 0-1.42zM3 11h1a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2zm17 0h1a1 1 0 0 1 0 2h-1a1 1 0 0 1 0-2zM4.22 19.78a1 1 0 0 1 0-1.42l.71-.7a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0zm13.02-13.02a1 1 0 0 1 0-1.42l.71-.7a1 1 0 1 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0z"/></svg>
+  </button>
   <div class="pw-box">
     <div class="pw-logo">bK</div>
     <h2>bKash Tax Calculator</h2>
@@ -985,7 +1048,7 @@ body.light-mode .modal-body p strong{color:#1A1A1B}
   <div class="tab-pane" id="tab1" style="display:none">
 
     <!-- Suggestion card FIRST -->
-    <div class="suggest-card">
+    <div class="suggest-card" id="suggestCard">
       <div class="suggest-header">
         <div class="suggest-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div>
         <div>
@@ -1280,26 +1343,130 @@ async function submitPw(){
   const ok=await _check(val);
   if(ok){
     sessionStorage.setItem('_bkauth','1');
-    _gel('pwGate').style.display='none';
+    hideGate();
   } else {
     err.textContent='Incorrect password. Please try again.';
     inp.value='';inp.focus();
+    btn.disabled=false;btn.textContent='Unlock Calculator';
   }
-  btn.disabled=false;btn.textContent='Unlock Calculator';
 }
 function togglePwVis(){
   const inp=_gel('pwInput');
   inp.type=inp.type==='password'?'text':'password';
 }
 // Run immediately — no dependency on $ helper
+function showGate(){
+  const g=_gel('pwGate');
+  g.style.display='flex';
+  g.classList.remove('gate-show');
+  void g.offsetWidth;
+  g.classList.add('gate-show');
+  setTimeout(()=>{const inp=_gel('pwInput');if(inp)inp.focus();},150);
+}
+function hideGate(){
+  const g=_gel('pwGate');
+  g.style.display='none';
+  const p=document.getElementById('tab0');
+  if(p){p.classList.remove('tab-entering');void p.offsetWidth;p.classList.add('tab-entering');}
+}
 (function initGate(){
   if(sessionStorage.getItem('_bkauth')==='1'){
     _gel('pwGate').style.display='none';
+    document.addEventListener('DOMContentLoaded',function(){
+      const p=document.getElementById('tab0');
+      if(p){p.classList.remove('tab-entering');void p.offsetWidth;p.classList.add('tab-entering');}
+    });
   } else {
+    // Add class before first paint — background stays opaque, only pw-box animates in
+    _gel('pwGate').classList.add('pw-box-enter');
     document.addEventListener('DOMContentLoaded',function(){
       var inp=_gel('pwInput'); if(inp) inp.focus();
     });
   }
+})();
+
+// ─── Animated background canvas (login + calculator, theme-aware) ─────────────
+(function(){
+  var DARK={
+    bg:'#0b0f1a',
+    orbs:[
+      {bx:0.12,by:0.22,r:0.52,c:'37,99,235',  op:0.20,sx:0.38,sy:0.28,px:0,  py:1.4},
+      {bx:0.82,by:0.72,r:0.44,c:'124,58,237', op:0.17,sx:0.27,sy:0.22,px:2.0,py:0.6},
+      {bx:0.48,by:0.48,r:0.30,c:'14,165,233', op:0.12,sx:0.52,sy:0.42,px:4.1,py:3.0},
+    ],
+    waves:[
+      {y:0.36,amp:0.072,freq:0.0024,spd:0.17,c:'37,99,235',  op:0.052},
+      {y:0.54,amp:0.058,freq:0.0030,spd:0.11,c:'124,58,237', op:0.042},
+      {y:0.70,amp:0.048,freq:0.0019,spd:0.21,c:'14,165,233', op:0.032},
+    ]
+  };
+  var LIGHT={
+    bg:'#eef2ff',
+    orbs:[
+      {bx:0.12,by:0.22,r:0.52,c:'37,99,235',  op:0.10,sx:0.38,sy:0.28,px:0,  py:1.4},
+      {bx:0.82,by:0.72,r:0.44,c:'124,58,237', op:0.08,sx:0.27,sy:0.22,px:2.0,py:0.6},
+      {bx:0.48,by:0.48,r:0.30,c:'14,165,233', op:0.06,sx:0.52,sy:0.42,px:4.1,py:3.0},
+    ],
+    waves:[
+      {y:0.36,amp:0.072,freq:0.0024,spd:0.17,c:'37,99,235',  op:0.022},
+      {y:0.54,amp:0.058,freq:0.0030,spd:0.11,c:'124,58,237', op:0.018},
+      {y:0.70,amp:0.048,freq:0.0019,spd:0.21,c:'14,165,233', op:0.013},
+    ]
+  };
+
+  function startCanvas(id){
+    var canvas=document.getElementById(id);
+    if(!canvas) return;
+    var ctx=canvas.getContext('2d');
+    function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+    resize();
+    window.addEventListener('resize',resize);
+
+    function drawOrbs(t,w,h,orbs){
+      orbs.forEach(function(o){
+        var x=(o.bx+Math.sin(t*o.sx+o.px)*0.09)*w;
+        var y=(o.by+Math.cos(t*o.sy+o.py)*0.08)*h;
+        var r=o.r*Math.max(w,h);
+        var g=ctx.createRadialGradient(x,y,0,x,y,r);
+        g.addColorStop(0,'rgba('+o.c+','+o.op+')');
+        g.addColorStop(1,'rgba('+o.c+',0)');
+        ctx.fillStyle=g;
+        ctx.fillRect(0,0,w,h);
+      });
+    }
+
+    function drawWaves(t,w,h,waves){
+      waves.forEach(function(wv){
+        var baseY=wv.y*h,amp=wv.amp*h;
+        ctx.beginPath();
+        ctx.moveTo(-10,baseY);
+        for(var x=-10;x<=w+10;x+=4){
+          ctx.lineTo(x,baseY+Math.sin(x*wv.freq+t*wv.spd)*amp);
+        }
+        ctx.lineTo(w+10,h+10);ctx.lineTo(-10,h+10);ctx.closePath();
+        var g=ctx.createLinearGradient(0,baseY-amp*1.5,0,baseY+amp*2.5);
+        g.addColorStop(0,'rgba('+wv.c+',0)');
+        g.addColorStop(0.35,'rgba('+wv.c+','+wv.op+')');
+        g.addColorStop(0.65,'rgba('+wv.c+','+(wv.op*0.6)+')');
+        g.addColorStop(1,'rgba('+wv.c+',0)');
+        ctx.fillStyle=g;ctx.fill();
+      });
+    }
+
+    function draw(now){
+      var t=now*0.001,w=canvas.width,h=canvas.height;
+      var theme=document.body.classList.contains('light-mode')?LIGHT:DARK;
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle=theme.bg;ctx.fillRect(0,0,w,h);
+      drawOrbs(t,w,h,theme.orbs);
+      drawWaves(t,w,h,theme.waves);
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  }
+
+  startCanvas('pwCanvas');
+  startCanvas('appCanvas');
 })();
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -1363,10 +1530,12 @@ function closeLogoutModal(){$('logoutModal').classList.remove('open');document.b
 function confirmLogout(){
   sessionStorage.removeItem('_bkauth');
   closeLogoutModal();
-  _gel('pwGate').style.display='flex';
-  _gel('pwInput').value='';
-  _gel('pwError').textContent='';
-  _gel('pwInput').focus();
+  // Wait for modal close animation, then gate fades in over app (dissolve)
+  setTimeout(()=>{
+    _gel('pwInput').value='';
+    _gel('pwError').textContent='';
+    showGate();
+  },280);
 }
 
 // ── Theme ──
@@ -1414,6 +1583,19 @@ function doReset(){
 const $=id=>document.getElementById(id);
 const v=id=>parseFloat(($( id).value||'').replace(/,/g,''))||0;
 const fmt=n=>'৳'+Math.round(n).toLocaleString('en-IN');
+function animateNum(el,newVal,dur=380){
+  const old=parseFloat(el.dataset.numVal)||0;
+  el.dataset.numVal=newVal;
+  if(Math.round(old)===Math.round(newVal)){el.textContent=fmt(newVal);return;}
+  const t0=performance.now();
+  (function step(now){
+    const p=Math.min((now-t0)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=fmt(old+(newVal-old)*ease);
+    if(p<1)requestAnimationFrame(step);
+    else{el.textContent=fmt(newVal);el.classList.add('num-pop');setTimeout(()=>el.classList.remove('num-pop'),320);}
+  })(t0);
+}
 const rnd=n=>Math.round(n*100)/100;
 const n2=n=>Math.round(n);
 
@@ -1455,7 +1637,10 @@ function getDynLabel(i,limit){
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 function switchTab(n){
-  document.querySelectorAll('.tab-pane').forEach((p,i)=>p.style.display=i===n?'block':'none');
+  document.querySelectorAll('.tab-pane').forEach((p,i)=>{
+    p.style.display=i===n?'block':'none';
+    if(i===n){p.classList.remove('tab-entering');void p.offsetWidth;p.classList.add('tab-entering');}
+  });
   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
 }
 
@@ -1798,18 +1983,18 @@ function calc(){
   const finalTaxPayable=Math.max(0,effectiveNetTax-totalDed);
 
   // Stats bar
-  $('stTotalSalary').textContent  =fmt(totalIncome);
-  $('stTaxableSalary').textContent=fmt(taxableIncome);
-  $('stNonTaxable').textContent   =fmt(nonTaxable);
-  $('stTaxPaid').textContent      =fmt(totalDed);
-  $('stTaxDue').textContent       =fmt(finalTaxPayable);
+  animateNum($('stTotalSalary'),totalIncome);
+  animateNum($('stTaxableSalary'),taxableIncome);
+  animateNum($('stNonTaxable'),nonTaxable);
+  animateNum($('stTaxPaid'),totalDed);
+  animateNum($('stTaxDue'),finalTaxPayable);
 
   // Summary
-  $('sTaxable').textContent   =fmt(taxableIncome);
-  $('sGross').textContent     =fmt(grossTax);
-  $('sTotalPaid').textContent =fmt(totalDed);
-  $('sRebate').textContent    =fmt(rebateAmt);
-  $('sTaxPayable').textContent=fmt(finalTaxPayable);
+  animateNum($('sTaxable'),taxableIncome);
+  animateNum($('sGross'),grossTax);
+  animateNum($('sTotalPaid'),totalDed);
+  animateNum($('sRebate'),rebateAmt);
+  animateNum($('sTaxPayable'),finalTaxPayable);
 
   // Slab breakdown
   const tb=$('brkBody');tb.innerHTML='';
@@ -1827,9 +2012,9 @@ function calc(){
   tb.appendChild(tot);
 
   // Investment rebate breakdown — use settle-tbl style for consistent colors
-  $('r_totalInvest').textContent =fmt(totalInvest);
-  $('r_investRebate').textContent=fmt(investRebate);
-  $('r_rebateAmt').textContent   =fmt(rebateAmt);
+  animateNum($('r_totalInvest'),totalInvest);
+  animateNum($('r_investRebate'),investRebate);
+  animateNum($('r_rebateAmt'),rebateAmt);
   $('rebateDetails').innerHTML=`
     <tr><td>Maximum rebatable (taxable × ${config.rebatePct}%)</td><td>${fmt(maxRebatable)}</td></tr>
     <tr><td>Investment rebate (total investment × 15%)</td><td class="c-org">${fmt(investRebate)}</td></tr>
@@ -1904,9 +2089,9 @@ function updateSuggestion(maxRebatable,rebateAmt,investRebate,totalInvest,ceilin
   const effectiveMax=Math.min(maxRebatable,ceiling);
   const rebateGap=Math.max(0,effectiveMax-rebateAmt);
   const pct=effectiveMax>0?Math.min(100,(rebateAmt/effectiveMax)*100):0;
-  $('sg_maxRebatable').textContent =fmt(effectiveMax);
-  $('sg_currentRebate').textContent=fmt(rebateAmt);
-  $('sg_rebateGap').textContent    =fmt(rebateGap);
+  animateNum($('sg_maxRebatable'),effectiveMax);
+  animateNum($('sg_currentRebate'),rebateAmt);
+  animateNum($('sg_rebateGap'),rebateGap);
   $('sg_progressBar').style.width  =pct.toFixed(1)+'%';
   $('sg_progressPct').textContent  =pct.toFixed(1)+'% of max rebate utilized';
   const tip=$('sg_tip');
@@ -1916,10 +2101,16 @@ function updateSuggestion(maxRebatable,rebateAmt,investRebate,totalInvest,ceilin
     $('sg_investNeeded').textContent='';return;
   }
   if(rebateGap<=0){
+    const sc=document.getElementById('suggestCard');
+    if(sc){sc.classList.remove('optimized');void sc.offsetWidth;sc.classList.add('optimized');}
     tip.className='suggest-tip ok';
     tip.innerHTML='<strong>✓ Fully optimized!</strong> Your investment rebate is already at the maximum. No additional investment needed.';
+    void tip.offsetWidth;tip.classList.add('tip-bounce');
+    tip.addEventListener('animationend',()=>tip.classList.remove('tip-bounce'),{once:true});
     $('sg_investNeeded').textContent='Fully optimized';return;
   }
+  const sc2=document.getElementById('suggestCard');
+  if(sc2)sc2.classList.remove('optimized');
   const additionalNeeded=rebateGap/0.15;
   $('sg_investNeeded').textContent=`Need ${fmt(additionalNeeded)} more`;
   tip.className='suggest-tip';
@@ -1973,5 +2164,6 @@ function exportExcel(){
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 onFestChange(1);onFestChange(2);onLfaChange();calc();
 </script>
+<div id="appFadeout"></div>
 </body>
 </html>

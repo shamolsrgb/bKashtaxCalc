@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="ocr/tesseract.min.js"></script>
 <style>
 /*
   Type scale — 18px base, +2px shift across all steps
@@ -658,6 +659,31 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
 @keyframes tipBounce{0%{transform:scale(0.96)}40%{transform:scale(1.05)}70%{transform:scale(0.98)}100%{transform:scale(1)}}
 .suggest-card.optimized{animation:successGlow 1.1s ease 3}
 .suggest-tip.ok.tip-bounce{animation:tipBounce .45s ease}
+
+/* ── OCR Upload Zone ── */
+.ocr-zone{border:2px dashed #2E2E2E;border-radius:10px;padding:14px 18px;cursor:pointer;transition:border-color .2s,background .2s;background:rgba(255,255,255,.02);margin-bottom:18px;text-align:center}
+.ocr-zone:hover,.ocr-zone.dragging{border-color:#2563eb;background:rgba(37,99,235,.06)}
+.ocr-zone label{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ocr-zone-icon{font-size:24px;line-height:1}
+.ocr-zone-title{font-size:var(--t-sm);font-weight:700;color:#CCCCCC}
+.ocr-zone-sub{font-size:var(--t-xs);color:#94A3B8}
+.ocr-progress-wrap{margin-top:10px;height:5px;border-radius:99px;background:#1e1e2e;overflow:hidden;display:none}
+.ocr-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .3s}
+.ocr-zone-msg{font-size:var(--t-xs);margin-top:6px;color:#f87171;display:none}
+/* OCR Preview Modal */
+#ocrModal .ocr-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+@media(max-width:600px){#ocrModal .ocr-preview-grid{grid-template-columns:1fr}}
+#ocrPreviewImg{width:100%;max-height:280px;object-fit:contain;border-radius:8px;border:1px solid #2E2E2E;background:#111}
+.ocr-fields-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:280px}
+.ocr-field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}
+.ocr-field-lbl{font-size:var(--t-xs);color:#94A3B8}
+.ocr-field-row input{padding:6px 10px;font-size:var(--t-sm);background:#1a1a2e;border:1px solid #2E2E2E;border-radius:6px;color:#EEEEEE;width:100%}
+.ocr-note{font-size:var(--t-xs);color:#f59e0b;margin-top:10px;padding:8px 10px;background:rgba(245,158,11,.08);border-radius:6px;border:1px solid rgba(245,158,11,.2)}
+body.light-mode .ocr-zone{border-color:#d1d5db;background:rgba(0,0,0,.02)}
+body.light-mode .ocr-zone:hover,body.light-mode .ocr-zone.dragging{border-color:#2563eb;background:rgba(37,99,235,.05)}
+body.light-mode .ocr-zone-title{color:#333}
+body.light-mode #ocrPreviewImg{background:#f3f4f6;border-color:#d1d5db}
+body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;color:#111}
 </style>
 </head>
 <body>
@@ -778,6 +804,37 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
     <div class="modal-ftr">
       <button class="btn-ghost" onclick="closeInvModal()">Cancel</button>
       <button class="btn-pink" onclick="saveInvModal()">Apply Selection</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── OCR Preview Modal ─── -->
+<div class="modal-overlay" id="ocrModal">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-hdr">
+      <h2>Review Extracted Fields</h2>
+      <button class="modal-close" onclick="closeOcrModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ocr-preview-grid">
+        <div><img id="ocrPreviewImg" src="" alt="Salary slip preview"></div>
+        <div>
+          <div class="ocr-fields-list">
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Basic Salary (annual)</span><input type="text" inputmode="numeric" id="ocrBasic" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">House Rent (annual)</span><input type="text" inputmode="numeric" id="ocrHra" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Medical Allowance (annual)</span><input type="text" inputmode="numeric" id="ocrMedical" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Conveyance (annual)</span><input type="text" inputmode="numeric" id="ocrConveyance" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">LFA</span><input type="text" inputmode="numeric" id="ocrLfa" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Festival Bonus</span><input type="text" inputmode="numeric" id="ocrFestBonus" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Performance Bonus</span><input type="text" inputmode="numeric" id="ocrAnnualPerf" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Profit Share</span><input type="text" inputmode="numeric" id="ocrProfitShare" value="0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-ghost" onclick="closeOcrModal()">Cancel</button>
+      <button class="btn-pink" onclick="applyOcrResult()">Apply to Form</button>
     </div>
   </div>
 </div>
@@ -932,6 +989,17 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
 
       <!-- ── Basic Mode ── -->
       <div id="basicSection">
+        <!-- OCR Upload Zone -->
+        <div id="ocrZone" class="ocr-zone" style="margin-bottom:16px" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="this.classList.remove('dragging');handleOcrFile(event.dataTransfer.files[0])">
+          <label for="ocrInput">
+            <span class="ocr-zone-icon">📷</span>
+            <span class="ocr-zone-title">Upload salary slip to auto-fill fields</span>
+            <span class="ocr-zone-sub">Bengali or English &middot; Works fully offline</span>
+          </label>
+          <input type="file" id="ocrInput" accept="image/*" hidden onchange="handleOcrFile(this.files[0])">
+          <div class="ocr-progress-wrap" id="ocrProgressWrap"><div class="ocr-progress-bar" id="ocrProgressBar"></div></div>
+          <div class="ocr-zone-msg" id="ocrZoneMsg"></div>
+        </div>
         <div class="g2">
           <div class="field"><label>Basic salary (annual)</label><input type="text" inputmode="numeric" id="sbBasic" value="0" oninput="onNumInput(this);calc()"></div>
           <div class="field"><label>House rent allowance (annual)</label><input type="text" inputmode="numeric" id="sbHra" value="0" oninput="onNumInput(this);calc()"></div>
@@ -953,7 +1021,7 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
         <div class="sub-title">Allowances &amp; Bonuses</div>
         <div class="g2">
           <div class="field">
-            <label>Leave Fare Assistance</label>
+            <label>Leave Fair Assistance</label>
             <input type="text" inputmode="numeric" id="sbLfa" value="0" oninput="onNumInput(this);calc()">
           </div>
         </div>
@@ -1012,7 +1080,7 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
         <div class="sub-title">Allowances &amp; Bonuses</div>
         <div class="fest-row">
           <div style="min-width:160px">
-            <div class="fest-lbl">Leave Fare Assistance</div>
+            <div class="fest-lbl">Leave Fair Assistance</div>
             <div class="fest-source">
               <label><input type="radio" name="lfaMode" value="auto" checked onchange="onLfaChange()"><span>Annual</span></label>
               <label><input type="radio" name="lfaMode" value="manual" onchange="onLfaChange()"><span>Manual</span></label>
@@ -1040,6 +1108,7 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
           <input type="text" inputmode="numeric" id="profitShare" value="0" oninput="onNumInput(this);calc()">
         </div>
       </div>
+
 
     </div>
   </div>
@@ -1514,6 +1583,7 @@ function onSalaryModeChange(mode){
   sbFestEdited=false;
   $('basicSection').style.display=mode==='basic'?'block':'none';
   $('detailsSection').style.display=mode==='details'?'block':'none';
+  $('ocrZone').style.display=mode==='basic'?'':'none';
   markDirty();calc();
 }
 function confirmReset(){closeResetModal();doReset();}
@@ -2162,6 +2232,185 @@ function exportExcel(){
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Tax Calculation');
   XLSX.writeFile(wb,'bKash_Tax_Calculation.xlsx');
+}
+
+// ─── OCR ──────────────────────────────────────────────────────────────────────
+let _ocrImageUrl = null;
+
+function _ocrBase() {
+  return window.location.origin + '/ocr/';
+}
+
+function preprocessImage(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      // scale up small images for better OCR
+      const scale = Math.max(1, Math.min(3, 1800 / Math.max(img.width, img.height)));
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const d = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < d.data.length; i += 4) {
+        const gray = 0.299 * d.data[i] + 0.587 * d.data[i+1] + 0.114 * d.data[i+2];
+        // adaptive threshold: pixels above 160 → white, else → black
+        const v = gray > 160 ? 255 : 0;
+        d.data[i] = d.data[i+1] = d.data[i+2] = v;
+      }
+      ctx.putImageData(d, 0, 0);
+      canvas.toBlob(blob => { URL.revokeObjectURL(url); resolve(blob); }, 'image/png');
+    };
+    img.src = url;
+  });
+}
+
+function parseSalaryText(text) {
+  const n = s => parseFloat((s || '0').replace(/[,৳\s]/g, '')) || 0;
+  const find = patterns => {
+    for (const p of patterns) {
+      const m = text.match(p);
+      if (m) return n(m[1]);
+    }
+    return 0;
+  };
+  return {
+    basic:        find([/basic\s*(?:salary|pay)?\s*[:\-=]?\s*([\d,]+)/i, /মূল\s*বেতন\s*[:\-=]?\s*([\d,]+)/, /basic[^\n]*?([\d,]{4,})/i]),
+    hra:          find([/house\s*rent\s*(?:allowance)?\s*[:\-=]?\s*([\d,]+)/i, /বাড়ি\s*ভাড়া\s*[:\-=]?\s*([\d,]+)/, /h\.?r\.?a\.?\s*[:\-=]?\s*([\d,]+)/i]),
+    medical:      find([/medical\s*(?:allowance)?\s*[:\-=]?\s*([\d,]+)/i, /চিকিৎসা\s*[:\-=]?\s*([\d,]+)/]),
+    conveyance:   find([/conveyance\s*(?:allowance)?\s*[:\-=]?\s*([\d,]+)/i, /যাতায়াত\s*[:\-=]?\s*([\d,]+)/]),
+    lfa:          find([/l\.?f\.?a\.?\s*[:\-=]?\s*([\d,]+)/i, /leave\s*fa[ri]r\s*(?:assistance)?\s*[:\-=]?\s*([\d,]+)/i, /leave\s+fa[ri]r[^\n]{0,30}?([\d,]{3,})/i, /lfa[^\n]{0,20}?([\d,]{3,})/i, /ছুটি\s*ভাতা[:\-=]?\s*([\d,]+)/]),
+    festivalBonus:find([/festival\s*bonus\s*[:\-=]?\s*([\d,]+)/i, /উৎসব\s*(?:ভাতা|বোনাস)\s*[:\-=]?\s*([\d,]+)/, /eid\s*bonus\s*[:\-=]?\s*([\d,]+)/i]),
+    annualPerf:   find([/performance\s*bonus\s*[:\-=]?\s*([\d,]+)/i, /annual\s*(?:performance\s*)?bonus\s*[:\-=]?\s*([\d,]+)/i, /perf(?:ormance)?\s*[:\-=]?\s*([\d,]+)/i, /বার্ষিক\s*বোনাস\s*[:\-=]?\s*([\d,]+)/]),
+    profitShare:  find([/profit\s*shar(?:e|ing)\s*[:\-=]?\s*([\d,]+)/i, /মুনাফা\s*[:\-=]?\s*([\d,]+)/]),
+  };
+}
+
+function showOcrMsg(msg, isError) {
+  const el = document.getElementById('ocrZoneMsg');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isError ? '#f87171' : '#94A3B8';
+  el.style.display = msg ? 'block' : 'none';
+}
+
+async function handleOcrFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) {
+    showOcrMsg('File too large (max 10 MB). Please use a smaller image.', true);
+    return;
+  }
+  showOcrMsg('', false);
+  const wrap = document.getElementById('ocrProgressWrap');
+  const bar  = document.getElementById('ocrProgressBar');
+  if (wrap) { wrap.style.display = 'block'; bar.style.width = '0%'; }
+
+  if (_ocrImageUrl) URL.revokeObjectURL(_ocrImageUrl);
+  _ocrImageUrl = URL.createObjectURL(file);
+
+  try {
+    const processed = await preprocessImage(file);
+    const base = _ocrBase();
+    const { data: { text } } = await Tesseract.recognize(processed, 'eng+ben', {
+      workerPath: base + 'worker.min.js',
+      corePath:   base + 'tesseract-core.wasm.js',
+      langPath:   base,
+      logger: m => {
+        if (m.status === 'recognizing text' && bar)
+          bar.style.width = Math.round((m.progress || 0) * 100) + '%';
+      }
+    });
+    if (wrap) wrap.style.display = 'none';
+    showOcrPreview(parseSalaryText(text));
+  } catch (e) {
+    if (wrap) wrap.style.display = 'none';
+    showOcrMsg('OCR failed. Try a clearer, well-lit photo.', true);
+    console.error('OCR error', e);
+  }
+  const inp = document.getElementById('ocrInput');
+  if (inp) inp.value = '';
+}
+
+function showOcrPreview(data) {
+  const fields = ['Basic','Hra','Medical','Conveyance','Lfa','FestBonus','AnnualPerf','ProfitShare'];
+  const keys   = ['basic','hra','medical','conveyance','lfa','festivalBonus','annualPerf','profitShare'];
+  keys.forEach((k, i) => {
+    const el = document.getElementById('ocr' + fields[i]);
+    if (el) el.value = data[k] > 0 ? Math.round(data[k]).toLocaleString('en-IN') : '0';
+  });
+  const img = document.getElementById('ocrPreviewImg');
+  if (img) img.src = _ocrImageUrl || '';
+  openOcrModal();
+}
+
+function openOcrModal() {
+  const m = document.getElementById('ocrModal');
+  if (m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; }
+}
+
+function closeOcrModal() {
+  const m = document.getElementById('ocrModal');
+  if (m) { m.classList.remove('open'); document.body.style.overflow = ''; }
+}
+
+function _parseOcrField(id) {
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  return parseFloat(el.value.replace(/[^0-9.]/g, '')) || 0;
+}
+
+function applyOcrResult() {
+  const v = {
+    basic:       _parseOcrField('ocrBasic'),
+    hra:         _parseOcrField('ocrHra'),
+    medical:     _parseOcrField('ocrMedical'),
+    conveyance:  _parseOcrField('ocrConveyance'),
+    lfa:         _parseOcrField('ocrLfa'),
+    festBonus:   _parseOcrField('ocrFestBonus'),
+    annualPerf:  _parseOcrField('ocrAnnualPerf'),
+    profitShare: _parseOcrField('ocrProfitShare'),
+  };
+
+  if (salaryMode === 'basic') {
+    if (v.basic)      setVal('sbBasic', v.basic);
+    if (v.hra)        setVal('sbHra', v.hra);
+    if (v.medical)    setVal('sbMedical', v.medical);
+    if (v.conveyance) setVal('sbConveyance', v.conveyance);
+    if (v.lfa)        setVal('sbLfa', v.lfa);
+    if (v.festBonus)  { setVal('sbFestTotal', v.festBonus); sbFestEdited = true; }
+    if (v.annualPerf)  setVal('annualPerf', v.annualPerf);
+    if (v.profitShare) setVal('profitShare', v.profitShare);
+  } else {
+    // Details mode — fill both before/after increment slots
+    if (v.basic)      { setVal('bBasic', v.basic);      setVal('aBasic', v.basic); }
+    if (v.hra)        { setVal('bHra', v.hra);          setVal('aHra', v.hra); }
+    if (v.medical)    { setVal('bMedical', v.medical);  setVal('aMedical', v.medical); }
+    if (v.conveyance) { setVal('bConveyance', v.conveyance); setVal('aConveyance', v.conveyance); }
+    if (v.lfa) {
+      // LFA field is auto-calculated from prev basic; set manual override directly
+      const lfaEl = document.getElementById('lfa');
+      if (lfaEl) {
+        const wasReadonly = lfaEl.hasAttribute('readonly');
+        lfaEl.removeAttribute('readonly');
+        setVal('lfa', v.lfa);
+        if (wasReadonly) lfaEl.setAttribute('readonly', '');
+      }
+    }
+    if (v.festBonus) {
+      // switch fest1 to manual mode then set value
+      const manualRadio = document.querySelector('input[name="fest1Source"][value="manual"]');
+      if (manualRadio) { manualRadio.checked = true; onFestChange(1); }
+      setVal('fest1Val', v.festBonus);
+    }
+    if (v.annualPerf)  setVal('annualPerf', v.annualPerf);
+    if (v.profitShare) setVal('profitShare', v.profitShare);
+  }
+
+  markDirty();
+  calc();
+  closeOcrModal();
 }
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────

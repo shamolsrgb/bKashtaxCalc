@@ -241,6 +241,7 @@ header{background:#2563eb;padding:10px 20px;display:flex;align-items:center;gap:
 .sg-item{background:#0A1020;border:1px solid #1E3055;border-radius:8px;padding:12px}
 .sg-item .s-lbl{font-size:var(--t-xs);color:#94A3B8;margin-bottom:5px;line-height:1.4}
 .sg-item .s-val{font-size:var(--t-md);font-weight:800;letter-spacing:-.3px;line-height:1.2}
+.sg-item .s-sub{font-size:10px;font-weight:600;color:#ff9800;margin-top:4px;opacity:.85}
 .s-grn{color:#4caf50}.s-org{color:#ff9800}.s-red{color:#e2136e}.s-def{color:#FFFFFF}
 .progress-bar-wrap{background:#1A2A45;border-radius:6px;height:8px;overflow:hidden;margin-bottom:7px}
 .progress-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#2563eb,#60A5FA);transition:width .4s}
@@ -671,10 +672,12 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
 .ocr-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .3s}
 .ocr-zone-msg{font-size:var(--t-xs);margin-top:6px;color:#f87171;display:none}
 /* OCR Preview Modal */
-#ocrModal .ocr-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
-@media(max-width:600px){#ocrModal .ocr-preview-grid{grid-template-columns:1fr}}
-#ocrPreviewImg{width:100%;max-height:280px;object-fit:contain;border-radius:8px;border:1px solid #2E2E2E;background:#111}
+#ocrModal .ocr-preview-grid,#ocrModalDetails .ocr-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+@media(max-width:600px){#ocrModal .ocr-preview-grid,#ocrModalDetails .ocr-preview-grid{grid-template-columns:1fr}}
+#ocrPreviewImg,#ocrDetailsPreviewImg{width:100%;max-height:320px;object-fit:contain;border-radius:8px;border:1px solid #2E2E2E;background:#111}
+.ocr-section-lbl{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;padding:4px 0 2px;grid-column:1/-1}
 .ocr-fields-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:280px}
+#ocrModalDetails .ocr-fields-list{max-height:none;overflow-y:visible}
 .ocr-field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}
 .ocr-field-lbl{font-size:var(--t-xs);color:#94A3B8}
 .ocr-field-row input{padding:6px 10px;font-size:var(--t-sm);background:#1a1a2e;border:1px solid #2E2E2E;border-radius:6px;color:#EEEEEE;width:100%}
@@ -726,9 +729,9 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
       <h3 style="font-size:18px;margin-bottom:10px">All entered data will be lost</h3>
       <p style="font-size:15px;line-height:1.7">You have entered salary, investment, and tax deduction data. Resetting will permanently clear <strong>all values</strong> — salary figures, investments, monthly deductions, and additional entries. You'll need to start over from scratch.</p>
     </div>
-    <div class="modal-ftr">
-      <button class="btn-ghost" onclick="closeResetModal()">Cancel, keep my data</button>
-      <button class="btn-pink" onclick="confirmReset()">Yes, reset everything</button>
+    <div class="modal-ftr" style="justify-content:center;flex-wrap:wrap">
+      <button class="btn-ghost" onclick="closeResetModal()" style="flex:1">Cancel, keep my data</button>
+      <button class="btn-pink" onclick="confirmReset()" style="flex:1">Yes, reset everything</button>
     </div>
   </div>
 </div>
@@ -747,9 +750,9 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
       <h3 style="font-size:18px;margin-bottom:10px">Are you sure you want to logout?</h3>
       <p style="font-size:15px;line-height:1.7">You will be returned to the password screen. Any unsaved data will remain in the current session.</p>
     </div>
-    <div class="modal-ftr">
-      <button class="btn-ghost" onclick="closeLogoutModal()">Cancel</button>
-      <button class="btn-pink" onclick="confirmLogout()">Yes, Logout</button>
+    <div class="modal-ftr" style="justify-content:center;flex-wrap:wrap">
+      <button class="btn-ghost" onclick="closeLogoutModal()" style="flex:1">Cancel</button>
+      <button class="btn-pink" onclick="confirmLogout()" style="flex:1">Yes, Logout</button>
     </div>
   </div>
 </div>
@@ -839,6 +842,44 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
   </div>
 </div>
 
+<!-- ─── Details OCR Modal ─── -->
+<div class="modal-overlay" id="ocrModalDetails">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-hdr">
+      <h2>Review Extracted Fields</h2>
+      <button class="modal-close" onclick="closeDetailsOcrModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ocr-preview-grid">
+        <div><img id="ocrDetailsPreviewImg" src="" alt="Salary review preview"></div>
+        <div>
+          <div class="ocr-fields-list">
+            <div class="ocr-section-lbl">Before Increment (Previous Amount)</div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Basic Salary (annual)</span><input type="text" inputmode="numeric" id="ocrDBBasic" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">House Rent (annual)</span><input type="text" inputmode="numeric" id="ocrDBHra" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Medical Allowance (annual)</span><input type="text" inputmode="numeric" id="ocrDBMedical" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Conveyance (annual)</span><input type="text" inputmode="numeric" id="ocrDBConveyance" value="0"></div>
+            <div class="ocr-section-lbl">After Increment (New Amount)</div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Basic Salary (annual)</span><input type="text" inputmode="numeric" id="ocrDABasic" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">House Rent (annual)</span><input type="text" inputmode="numeric" id="ocrDAHra" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Medical Allowance (annual)</span><input type="text" inputmode="numeric" id="ocrDAMedical" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Conveyance (annual)</span><input type="text" inputmode="numeric" id="ocrDAConveyance" value="0"></div>
+            <div class="ocr-section-lbl">Bonus</div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Annual Performance Bonus</span><input type="text" inputmode="numeric" id="ocrDPerf" value="0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body" style="padding-top:0">
+
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-ghost" onclick="closeDetailsOcrModal()">Cancel</button>
+      <button class="btn-pink" onclick="applyDetailsOcrResult()">Apply to Form</button>
+    </div>
+  </div>
+</div>
+
 <!-- ─── Config Modal ─── -->
 <div class="modal-overlay" id="configModal">
   <div class="modal">
@@ -848,23 +889,21 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
     </div>
     <div class="modal-body">
       <div class="modal-section-title">Rebate Limit Control</div>
-      <div class="g3">
+      <div class="g2">
         <div class="field"><label>Tax Exemption Max Limit</label><input type="text" inputmode="numeric" id="mNonTaxable" value="500,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Max rebate % of taxable income</label><input type="number" id="mRebatePct" value="3" step="0.1"></div>
         <div class="field"><label>Max rebate ceiling</label><input type="text" inputmode="numeric" id="mRebateCeiling" value="10,00,000" oninput="onNumInput(this)"></div>
       </div>
       <div class="modal-section-title">Investment Limit Control</div>
-      <div class="g3">
+      <div class="g2">
         <div class="field"><label>DPS max limit</label><input type="text" inputmode="numeric" id="mDpsMax" value="1,20,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Sanchaypatra max limit</label><input type="text" inputmode="numeric" id="mSanchMax" value="5,00,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Life insurance eligible % of premium</label>
-          <div style="display:flex;align-items:center;gap:8px"><input type="number" id="mLifePct" value="10" step="1" style="flex:1"><span style="color:#94A3B8">%</span></div>
+          <input type="number" id="mLifePct" value="10" step="1">
         </div>
-      </div>
-      <div class="g3" style="margin-top:12px">
         <div class="field"><label>Government Securities max limit</label><input type="text" inputmode="numeric" id="mGovSecMax" value="5,00,000" oninput="onNumInput(this)"></div>
         <div class="field"><label>Provident fund rate (% of basic)</label>
-          <div style="display:flex;align-items:center;gap:8px"><input type="number" id="mPfRate" value="10" step="1" min="0" max="100" style="flex:1"><span style="color:#94A3B8">%</span></div>
+          <input type="number" id="mPfRate" value="10" step="1" min="0" max="100">
         </div>
       </div>
       <div class="modal-section-title">Tax Year &amp; Slab Configuration</div>
@@ -1029,6 +1068,17 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
 
       <!-- ── Details Mode ── -->
       <div id="detailsSection" style="display:none">
+        <!-- OCR Upload Zone for Details -->
+        <div id="ocrZoneDetails" class="ocr-zone" style="margin-bottom:16px" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="this.classList.remove('dragging');handleDetailsOcrFile(event.dataTransfer.files[0])">
+          <label for="ocrInputDetails">
+            <span class="ocr-zone-icon">📷</span>
+            <span class="ocr-zone-title">Upload salary review letter to auto-fill fields</span>
+            <span class="ocr-zone-sub">Extracts before &amp; after increment amounts</span>
+          </label>
+          <input type="file" id="ocrInputDetails" accept="image/*" hidden onchange="handleDetailsOcrFile(this.files[0])">
+          <div class="ocr-progress-wrap" id="ocrProgressWrapDetails"><div class="ocr-progress-bar" id="ocrProgressBarDetails"></div></div>
+          <div class="ocr-zone-msg" id="ocrZoneMsgDetails"></div>
+        </div>
         <div class="salary-split">
           <div class="period-col">
             <div class="period-hdr"><span>Before Increment</span><span class="period-badge">9 MONTHS</span></div>
@@ -1079,20 +1129,9 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
         </div>
         <div class="sub-title">Allowances &amp; Bonuses</div>
         <div class="fest-row">
-          <div style="min-width:160px">
-            <div class="fest-lbl">Leave Fair Assistance</div>
-            <div class="fest-source">
-              <label><input type="radio" name="lfaMode" value="auto" checked onchange="onLfaChange()"><span>Annual</span></label>
-              <label><input type="radio" name="lfaMode" value="manual" onchange="onLfaChange()"><span>Manual</span></label>
-            </div>
-          </div>
-          <div class="fest-val-wrap" id="lfaBasicWrap">
-            <label>Previous year's annual basic</label>
-            <input type="text" inputmode="numeric" id="lfaPrevBasic" value="0" oninput="onNumInput(this);syncLfaAuto();calc()">
-          </div>
           <div class="fest-val-wrap">
-            <label id="lfaHint">LFA (1 month = annual ÷ 12)</label>
-            <input type="text" inputmode="numeric" id="lfa" value="0" readonly oninput="onNumInput(this);calc()">
+            <label>Leave Fair Assistance</label>
+            <input type="text" inputmode="numeric" id="lfa" value="0" oninput="onNumInput(this);calc()">
           </div>
         </div>
       </div>
@@ -1128,7 +1167,7 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
       <div class="suggest-grid">
         <div class="sg-item"><div class="s-lbl">Max Rebatable Amount</div><div class="s-val s-def" id="sg_maxRebatable">৳0</div></div>
         <div class="sg-item"><div class="s-lbl">Current Rebate Achieved</div><div class="s-val s-grn" id="sg_currentRebate">৳0</div></div>
-        <div class="sg-item"><div class="s-lbl">Rebate Gap Remaining</div><div class="s-val s-org" id="sg_rebateGap">৳0</div></div>
+        <div class="sg-item"><div class="s-lbl">Rebate Gap Remaining</div><div class="s-val s-org" id="sg_rebateGap">৳0</div><div class="s-sub" id="sg_rebateGapPct"></div></div>
       </div>
       <div class="progress-bar-wrap"><div class="progress-bar-fill" id="sg_progressBar" style="width:0%"></div></div>
       <div class="progress-label"><span id="sg_progressPct">0% of max rebate utilized</span><span id="sg_investNeeded"></span></div>
@@ -1215,7 +1254,7 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
       <div class="sec-title">Investment Rebate Breakdown</div>
       <div class="g3" style="margin-bottom:14px">
         <div class="sum-item"><div class="lbl">Total Investment</div><div class="val val-def" id="r_totalInvest">৳0</div></div>
-        <div class="sum-item"><div class="lbl">Investment Rebate (×15%)</div><div class="val val-org" id="r_investRebate">৳0</div></div>
+        <div class="sum-item"><div class="lbl">Investment Rebate</div><div class="val val-org" id="r_investRebate">৳0</div></div>
         <div class="sum-item"><div class="lbl">Applicable Rebate</div><div class="val val-grn" id="r_rebateAmt">৳0</div></div>
       </div>
       <div class="tbl-scroll"><table class="settle-tbl" id="rebateDetails" style="margin-top:0"></table></div>
@@ -1625,22 +1664,16 @@ function toggleTheme(){
 })();
 function doReset(){
   const ids=['bBasic','bHra','bMedical','bConveyance','aBasic','aHra','aMedical','aConveyance',
-    'lfa','lfaPrevBasic','annualPerf','profitShare',
+    'lfa','annualPerf','profitShare',
     'sbBasic','sbHra','sbMedical','sbConveyance','sbLfa',
     'invDps','invSanch','invLife','invGovSec','invStocks',
     'mJul','mAug','mSep','mOct','mNov','mDec','mJan','mFeb','mMar','mApr','mMay','mJun',
-    'profitTaxAmt','perfBonusTax','invTDSAmt'];
+    'profitTaxAmt','perfBonusTax','invTDSAmt','mAnnual'];
   ids.forEach(id=>{const el=$(id);if(el)el.value='0';});
   setVal('sbPfDisplay',0);setVal('sbFestTotal',0);sbFestEdited=false;
-  // Reset to basic mode
-  salaryMode='basic';
-  document.querySelector('input[name="salaryMode"][value="basic"]').checked=true;
-  $('basicSection').style.display='block';
-  $('detailsSection').style.display='none';
   document.querySelector('input[name="fest1"][value="before"]').checked=true;
   document.querySelector('input[name="fest2"][value="after"]').checked=true;
-  document.querySelector('input[name="lfaMode"][value="auto"]').checked=true;
-  onFestChange(1);onFestChange(2);onLfaChange();
+  onFestChange(1);onFestChange(2);
   // Hide all investment rows
   Object.keys(invEnabled).forEach(k=>{invEnabled[k]=false;applyInvRow(k);});
   updateInvEmptyState();
@@ -1825,25 +1858,6 @@ function syncFestAuto(){
 }
 
 // ─── LFA toggle ───────────────────────────────────────────────────────────────
-function onLfaChange(){
-  const mode=document.querySelector('input[name="lfaMode"]:checked').value;
-  const lfaInp=$('lfa'),hint=$('lfaHint'),wrap=$('lfaBasicWrap');
-  if(mode==='auto'){
-    wrap.style.display='flex';wrap.style.flexDirection='column';
-    lfaInp.readOnly=true;
-    hint.textContent='LFA (1 month = annual ÷ 12)';
-    syncLfaAuto();
-  } else {
-    wrap.style.display='none';
-    lfaInp.readOnly=false;
-    hint.textContent='LFA amount';
-  }
-  calc();
-}
-function syncLfaAuto(){
-  const mode=document.querySelector('input[name="lfaMode"]:checked').value;
-  if(mode==='auto')setVal('lfa',Math.round(v('lfaPrevBasic')/12));
-}
 
 // ─── Investment picker modal ──────────────────────────────────────────────────
 function openInvModal(){
@@ -1952,7 +1966,7 @@ function calc(){
     $('sbPfLbl').textContent=`Provident fund: Employer Contribution (${config.pfRate}% of basic)`;
     setVal('sbPfDisplay',_bB*PF_RATE);
   } else {
-    syncFestAuto(); syncLfaAuto();
+    syncFestAuto();
     _bB=v('bBasic'); _aB=v('aBasic');
     _bH=v('bHra');   _aH=v('aHra');
     _bM=v('bMedical'); _aM=v('aMedical');
@@ -2095,7 +2109,7 @@ function calc(){
     <tr><td>Applicable rebate (minimum of above)</td><td>${fmt(rebateAmt)}</td></tr>`;
 
   // Investment suggestion
-  updateSuggestion(maxRebatable,rebateAmt,investRebate,totalInvest,ceiling,taxableIncome);
+  updateSuggestion(maxRebatable,rebateAmt,investRebate,totalInvest,ceiling,taxableIncome,grossTax);
 
   // Final Settlement — hide zero/off rows
   const addDedRows=additionalDeds.map((d,i)=>d>0?`<tr><td>Additional office deduction ${i+1}</td><td class="c-grn">− ${fmt(d)}</td></tr>`:'').join('');
@@ -2130,22 +2144,18 @@ function calc(){
       grossTax2026+=applied*s.rate/100; rem2026-=applied;
       if(rem2026<=0)break;
     }
-    const netTax2026=Math.max(0,grossTax2026-rebateAmt);
-    const minTax2026Applies=grossTax2026>0&&netTax2026<MIN_TAX;
-    const effectiveNetTax2026=minTax2026Applies?MIN_TAX:netTax2026;
-    const finalTaxPayable2026=Math.max(0,effectiveNetTax2026-totalDed);
-    const increaseAmt=finalTaxPayable2026-finalTaxPayable;
+    const increaseAmt=grossTax2026-grossTax;
     if(increaseAmt===0){impCard.style.display='none';}else{impCard.style.display='block';}
-    const increasePct=finalTaxPayable>0?(increaseAmt/finalTaxPayable*100):0;
-    $('imp_currentTax').textContent=fmt(finalTaxPayable);
-    $('imp_nextTax').textContent=fmt(finalTaxPayable2026);
+    const increasePct=grossTax>0?(increaseAmt/grossTax*100):0;
+    $('imp_currentTax').textContent=fmt(grossTax);
+    $('imp_nextTax').textContent=fmt(grossTax2026);
     $('imp_increaseAmt').textContent=(increaseAmt>=0?'+':'')+fmt(Math.abs(increaseAmt));
     $('imp_increasePct').textContent=(increasePct>=0?'+':'')+increasePct.toFixed(1)+'%';
     $('imp_note').textContent=increaseAmt>0
-      ?`Under the new 2026-27 slab, your estimated tax increases by ${fmt(increaseAmt)} (${increasePct.toFixed(1)}%).`
+      ?`Under the new 2026-27 slab, your gross tax increases by ${fmt(increaseAmt)} (${increasePct.toFixed(1)}%).`
       :increaseAmt<0
-        ?`Under the new 2026-27 slab, your estimated tax decreases by ${fmt(Math.abs(increaseAmt))}.`
-        :`Under the new 2026-27 slab, your estimated tax remains the same.`;
+        ?`Under the new 2026-27 slab, your gross tax decreases by ${fmt(Math.abs(increaseAmt))}.`
+        :`Under the new 2026-27 slab, your gross tax remains the same.`;
   }else{
     impCard.style.display='none';
   }
@@ -2158,13 +2168,18 @@ function calc(){
 }
 
 // ─── Investment Suggestion ────────────────────────────────────────────────────
-function updateSuggestion(maxRebatable,rebateAmt,investRebate,totalInvest,ceiling,taxableIncome){
+function updateSuggestion(maxRebatable,rebateAmt,investRebate,totalInvest,ceiling,taxableIncome,grossTax){
   const effectiveMax=Math.min(maxRebatable,ceiling);
   const rebateGap=Math.max(0,effectiveMax-rebateAmt);
   const pct=effectiveMax>0?Math.min(100,(rebateAmt/effectiveMax)*100):0;
   animateNum($('sg_maxRebatable'),effectiveMax);
   animateNum($('sg_currentRebate'),rebateAmt);
   animateNum($('sg_rebateGap'),rebateGap);
+  const gapPctEl=$('sg_rebateGapPct');
+  if(gapPctEl){
+    const gapPct=grossTax>0?((rebateGap/grossTax)*100):0;
+    gapPctEl.textContent=rebateGap>0&&grossTax>0?gapPct.toFixed(1)+'% of your gross tax':'';
+  }
   $('sg_progressBar').style.width  =pct.toFixed(1)+'%';
   $('sg_progressPct').textContent  =pct.toFixed(1)+'% of max rebate utilized';
   const tip=$('sg_tip');
@@ -2208,7 +2223,7 @@ function exportExcel(){
     ['INVESTMENT & REBATE'],
     ['DPS (eligible)',n2(d.dpsElig||0)],['Sanchaypatra (eligible)',n2(d.sanchElig||0)],
     ['Life insurance (eligible)',n2(d.lifeElig||0)],['PF contribution (both sides)',n2(d.pfBothSides||0)],
-    ['Total Investment',n2(d.totalInvest||0)],['Investment Rebate (×15%)',n2(d.investRebate||0)],
+    ['Total Investment',n2(d.totalInvest||0)],['Investment Rebate',n2(d.investRebate||0)],
     ['Applicable Rebate',n2(d.rebateAmt||0)],[''],
     ['TAX SLAB BREAKDOWN'],['Slab','Limit','Rate (%)','Applied','Tax'],
     ...br.map((r,i)=>[getDynLabel(i,r.limit),isFinite(r.limit)?r.limit:'∞',r.rate,n2(r.applied),n2(r.tax)]),
@@ -2261,6 +2276,98 @@ function preprocessImage(file) {
         d.data[i] = d.data[i+1] = d.data[i+2] = v;
       }
       ctx.putImageData(d, 0, 0);
+      canvas.toBlob(blob => { URL.revokeObjectURL(url); resolve(blob); }, 'image/png');
+    };
+    img.src = url;
+  });
+}
+
+// Table-friendly preprocessor: upscale heavily, grayscale only (no threshold).
+// Threshold destroys thin table-cell content; anti-aliasing helps Tesseract.
+// Tesseract often skips text inside table borders. Threshold to B/W,
+// then erase long horizontal/vertical runs of black pixels (the borders),
+// leaving just the text for OCR.
+function preprocessImageForTable(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const scale = Math.max(1, 2000 / img.width);
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const bin = new Uint8Array(w * h);
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+        const isBlack = gray < 160;
+        bin[(i/4)] = isBlack ? 1 : 0;
+        const v = isBlack ? 0 : 255;
+        data[i] = data[i+1] = data[i+2] = v;
+      }
+
+      const minLineLength = Math.round(50 * scale);
+
+      for (let y = 0; y < h; y++) {
+        let runStart = -1;
+        for (let x = 0; x < w; x++) {
+          if (bin[y * w + x] === 1) {
+            if (runStart === -1) runStart = x;
+          } else {
+            if (runStart !== -1) {
+              if ((x - runStart) > minLineLength) {
+                for (let k = runStart; k < x; k++) {
+                  const idx = (y * w + k) * 4;
+                  data[idx] = data[idx+1] = data[idx+2] = 255;
+                  bin[y * w + k] = 0;
+                }
+              }
+              runStart = -1;
+            }
+          }
+        }
+        if (runStart !== -1 && (w - runStart) > minLineLength) {
+          for (let k = runStart; k < w; k++) {
+            const idx = (y * w + k) * 4;
+            data[idx] = data[idx+1] = data[idx+2] = 255;
+            bin[y * w + k] = 0;
+          }
+        }
+      }
+
+      for (let x = 0; x < w; x++) {
+        let runStart = -1;
+        for (let y = 0; y < h; y++) {
+          if (bin[y * w + x] === 1) {
+            if (runStart === -1) runStart = y;
+          } else {
+            if (runStart !== -1) {
+              if ((y - runStart) > minLineLength) {
+                for (let k = runStart; k < y; k++) {
+                  const idx = (k * w + x) * 4;
+                  data[idx] = data[idx+1] = data[idx+2] = 255;
+                }
+              }
+              runStart = -1;
+            }
+          }
+        }
+        if (runStart !== -1 && (h - runStart) > minLineLength) {
+          for (let k = runStart; k < h; k++) {
+            const idx = (k * w + x) * 4;
+            data[idx] = data[idx+1] = data[idx+2] = 255;
+          }
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
       canvas.toBlob(blob => { URL.revokeObjectURL(url); resolve(blob); }, 'image/png');
     };
     img.src = url;
@@ -2413,8 +2520,158 @@ function applyOcrResult() {
   closeOcrModal();
 }
 
+// ─── Details OCR ──────────────────────────────────────────────────────────────
+
+function showDetailsOcrMsg(msg, isError) {
+  const el = document.getElementById('ocrZoneMsgDetails');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isError ? '#f87171' : '#94A3B8';
+  el.style.display = msg ? 'block' : 'none';
+}
+
+function parseDetailsOcrText(text) {
+  const lines = text.split('\n');
+  const result = {
+    basic: {prev:0, next:0},
+    hra: {prev:0, next:0},
+    medical: {prev:0, next:0},
+    conveyance: {prev:0, next:0},
+    perfBonus: 0
+  };
+
+  const map = {
+    basic: [/basic\s*salary/i, /basic\s*pay/i],
+    hra: [/house\s*rent/i, /h\.?r\.?a/i],
+    medical: [/medical/i],
+    conveyance: [/conveyance/i],
+    perfBonus:[/payout\s*amount/i, /final\s*bonus/i, /performance\s*bonus/i]
+  };
+
+  lines.forEach(line => {
+    const numbers = line.replace(/,/g, '').match(/\b\d+\b/g);
+    if (!numbers) return;
+    const nums = numbers.map(n => parseInt(n, 10)).filter(n => n > 3000);
+
+    for (let key in map) {
+      if (map[key].some(reg => reg.test(line))) {
+        if (key === 'perfBonus') {
+          if (nums.length > 0) {
+            result.perfBonus = Math.max(result.perfBonus, ...nums);
+          }
+        } else {
+          if (result[key].prev === 0 || result[key].next === 0) {
+            if (nums.length >= 2) {
+              result[key].prev = nums[0];
+              result[key].next = nums[1];
+            } else if (nums.length === 1) {
+              if (result[key].prev === 0) result[key].prev = nums[0];
+              else result[key].next = nums[0];
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return result;
+}
+
+function showDetailsOcrPreview(data, rawText) {
+  const fmt = n => n > 0 ? Math.round(n).toLocaleString('en-IN') : '0';
+  document.getElementById('ocrDBBasic').value      = fmt(data.basic.prev);
+  document.getElementById('ocrDABasic').value      = fmt(data.basic.next);
+  document.getElementById('ocrDBHra').value        = fmt(data.hra.prev);
+  document.getElementById('ocrDAHra').value        = fmt(data.hra.next);
+  document.getElementById('ocrDBMedical').value    = fmt(data.medical.prev);
+  document.getElementById('ocrDAMedical').value    = fmt(data.medical.next);
+  document.getElementById('ocrDBConveyance').value = fmt(data.conveyance.prev);
+  document.getElementById('ocrDAConveyance').value = fmt(data.conveyance.next);
+  document.getElementById('ocrDPerf').value        = fmt(data.perfBonus);
+  const img = document.getElementById('ocrDetailsPreviewImg');
+  if (img) img.src = _ocrImageUrl || '';
+  openDetailsOcrModal();
+}
+
+function openDetailsOcrModal() {
+  const m = document.getElementById('ocrModalDetails');
+  if (m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; }
+}
+
+function closeDetailsOcrModal() {
+  const m = document.getElementById('ocrModalDetails');
+  if (m) { m.classList.remove('open'); document.body.style.overflow = ''; }
+}
+
+async function handleDetailsOcrFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) {
+    showDetailsOcrMsg('File too large (max 10 MB). Please use a smaller image.', true);
+    return;
+  }
+  showDetailsOcrMsg('', false);
+  const wrap = document.getElementById('ocrProgressWrapDetails');
+  const bar  = document.getElementById('ocrProgressBarDetails');
+  if (wrap) { wrap.style.display = 'block'; bar.style.width = '0%'; }
+
+  if (_ocrImageUrl) URL.revokeObjectURL(_ocrImageUrl);
+  _ocrImageUrl = URL.createObjectURL(file);
+
+  try {
+    const processed = await preprocessImageForTable(file);
+    const base = _ocrBase();
+    const { data: { text } } = await Tesseract.recognize(processed, 'eng', {
+      workerPath: base + 'worker.min.js',
+      corePath:   base + 'tesseract-core.wasm.js',
+      langPath:   base,
+      tessedit_pageseg_mode: '6',
+      preserve_interword_spaces: '1',
+      logger: m => {
+        if (m.status === 'recognizing text' && bar)
+          bar.style.width = Math.round((m.progress || 0) * 100) + '%';
+      }
+    });
+    if (wrap) wrap.style.display = 'none';
+    console.log('[Details OCR raw text]\n', text);
+    showDetailsOcrPreview(parseDetailsOcrText(text), text);
+  } catch (e) {
+    if (wrap) wrap.style.display = 'none';
+    showDetailsOcrMsg('OCR failed. Try a clearer, well-lit photo.', true);
+    console.error('OCR error', e);
+  }
+  const inp = document.getElementById('ocrInputDetails');
+  if (inp) inp.value = '';
+}
+
+function applyDetailsOcrResult() {
+  const bBasic      = _parseOcrField('ocrDBBasic');
+  const aBasic      = _parseOcrField('ocrDABasic');
+  const bHra        = _parseOcrField('ocrDBHra');
+  const aHra        = _parseOcrField('ocrDAHra');
+  const bMedical    = _parseOcrField('ocrDBMedical');
+  const aMedical    = _parseOcrField('ocrDAMedical');
+  const bConveyance = _parseOcrField('ocrDBConveyance');
+  const aConveyance = _parseOcrField('ocrDAConveyance');
+  const perf        = _parseOcrField('ocrDPerf');
+
+  if (bBasic)      setVal('bBasic', bBasic);
+  if (aBasic)      setVal('aBasic', aBasic);
+  if (bHra)        setVal('bHra', bHra);
+  if (aHra)        setVal('aHra', aHra);
+  // User mapping: OCR "Conveyance Allowance" → form Medical field, OCR "Medical" → form Conveyance
+  if (bConveyance) setVal('bMedical', bConveyance);
+  if (aConveyance) setVal('aMedical', aConveyance);
+  if (bMedical)    setVal('bConveyance', bMedical);
+  if (aMedical)    setVal('aConveyance', aMedical);
+  if (perf)        setVal('annualPerf', perf);
+
+  markDirty();
+  calc();
+  closeDetailsOcrModal();
+}
+
 // ─── Boot ─────────────────────────────────────────────────────────────────────
-onFestChange(1);onFestChange(2);onLfaChange();calc();
+onFestChange(1);onFestChange(2);calc();
 </script>
 <div id="appFadeout"></div>
 </body>

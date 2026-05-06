@@ -672,9 +672,9 @@ body.light-mode .field input:not([readonly]):focus,body.light-mode .field select
 .ocr-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#2563eb,#7c3aed);border-radius:99px;transition:width .3s}
 .ocr-zone-msg{font-size:var(--t-xs);margin-top:6px;color:#f87171;display:none}
 /* OCR Preview Modal */
-#ocrModal .ocr-preview-grid,#ocrModalDetails .ocr-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
-@media(max-width:600px){#ocrModal .ocr-preview-grid,#ocrModalDetails .ocr-preview-grid{grid-template-columns:1fr}}
-#ocrPreviewImg,#ocrDetailsPreviewImg{width:100%;max-height:320px;object-fit:contain;border-radius:8px;border:1px solid #2E2E2E;background:#111}
+#ocrModal .ocr-preview-grid,#ocrModalDetails .ocr-preview-grid,#ocrModalPromo .ocr-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+@media(max-width:600px){#ocrModal .ocr-preview-grid,#ocrModalDetails .ocr-preview-grid,#ocrModalPromo .ocr-preview-grid{grid-template-columns:1fr}}
+#ocrPreviewImg,#ocrDetailsPreviewImg,#ocrPromoPreviewImg{width:100%;max-height:320px;object-fit:contain;border-radius:8px;border:1px solid #2E2E2E;background:#111}
 .ocr-section-lbl{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;padding:4px 0 2px;grid-column:1/-1}
 .ocr-fields-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:280px}
 #ocrModalDetails .ocr-fields-list{max-height:none;overflow-y:visible}
@@ -880,6 +880,33 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
   </div>
 </div>
 
+<!-- ─── Promotion OCR Modal ─── -->
+<div class="modal-overlay" id="ocrModalPromo">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-hdr">
+      <h2>Review Extracted Fields</h2>
+      <button class="modal-close" onclick="closePromoOcrModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ocr-preview-grid">
+        <div><img id="ocrPromoPreviewImg" src="" alt="Promotion salary slip preview"></div>
+        <div>
+          <div class="ocr-fields-list">
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Basic Salary (annual)</span><input type="text" inputmode="numeric" id="ocrPBasic" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">House Rent (annual)</span><input type="text" inputmode="numeric" id="ocrPHra" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Medical Allowance (annual)</span><input type="text" inputmode="numeric" id="ocrPMedical" value="0"></div>
+            <div class="ocr-field-row"><span class="ocr-field-lbl">Conveyance (annual)</span><input type="text" inputmode="numeric" id="ocrPConveyance" value="0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-ghost" onclick="closePromoOcrModal()">Cancel</button>
+      <button class="btn-pink" onclick="applyPromoOcrResult()">Apply to Form</button>
+    </div>
+  </div>
+</div>
+
 <!-- ─── Config Modal ─── -->
 <div class="modal-overlay" id="configModal">
   <div class="modal">
@@ -1032,8 +1059,8 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
         <div id="ocrZone" class="ocr-zone" style="margin-bottom:16px" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="this.classList.remove('dragging');handleOcrFile(event.dataTransfer.files[0])">
           <label for="ocrInput">
             <span class="ocr-zone-icon">📷</span>
-            <span class="ocr-zone-title">Upload salary slip to auto-fill fields</span>
-            <span class="ocr-zone-sub">Bengali or English &middot; Works fully offline</span>
+            <span class="ocr-zone-title">Upload image to auto-fill fields</span>
+            <span class="ocr-zone-sub">Extracts Basic, HRA, Medical, Conveyance &amp; Performance Bonus</span>
           </label>
           <input type="file" id="ocrInput" accept="image/*" hidden onchange="handleOcrFile(this.files[0])">
           <div class="ocr-progress-wrap" id="ocrProgressWrap"><div class="ocr-progress-bar" id="ocrProgressBar"></div></div>
@@ -1072,8 +1099,8 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
         <div id="ocrZoneDetails" class="ocr-zone" style="margin-bottom:16px" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="this.classList.remove('dragging');handleDetailsOcrFile(event.dataTransfer.files[0])">
           <label for="ocrInputDetails">
             <span class="ocr-zone-icon">📷</span>
-            <span class="ocr-zone-title">Upload salary review letter to auto-fill fields</span>
-            <span class="ocr-zone-sub">Extracts before &amp; after increment amounts</span>
+            <span class="ocr-zone-title">Upload image to auto-fill fields</span>
+            <span class="ocr-zone-sub">Extracts Basic, HRA, Medical, Conveyance &amp; Performance Bonus</span>
           </label>
           <input type="file" id="ocrInputDetails" accept="image/*" hidden onchange="handleDetailsOcrFile(this.files[0])">
           <div class="ocr-progress-wrap" id="ocrProgressWrapDetails"><div class="ocr-progress-bar" id="ocrProgressBarDetails"></div></div>
@@ -1089,12 +1116,43 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
             <div class="field mt10"><label id="bPfLbl">Provident fund: Employer Contribution (10% of basic)</label><input type="text" id="bPfDisplay" readonly tabindex="-1"></div>
           </div>
           <div class="period-col">
-            <div class="period-hdr"><span>After Increment</span><span class="period-badge">3 MONTHS</span></div>
+            <div class="period-hdr"><span>After Increment</span><span class="period-badge" id="afterBadge">3 MONTHS</span></div>
             <div class="field"><label>Basic salary (annual)</label><input type="text" inputmode="numeric" id="aBasic" value="0" oninput="onNumInput(this);calc()"></div>
             <div class="field mt10"><label>House rent allowance (annual)</label><input type="text" inputmode="numeric" id="aHra" value="0" oninput="onNumInput(this);calc()"></div>
             <div class="field mt10"><label>Medical allowance (annual)</label><input type="text" inputmode="numeric" id="aMedical" value="0" oninput="onNumInput(this);calc()"></div>
             <div class="field mt10"><label>Conveyance allowance (annual)</label><input type="text" inputmode="numeric" id="aConveyance" value="0" oninput="onNumInput(this);calc()"></div>
             <div class="field mt10"><label id="aPfLbl">Provident fund: Employer Contribution (10% of basic)</label><input type="text" id="aPfDisplay" readonly tabindex="-1"></div>
+          </div>
+        </div>
+        <!-- Promotion Toggle -->
+        <label class="toggle-wrap" style="margin:16px 0 8px">
+          <span class="toggle">
+            <input type="checkbox" id="chkPromotion" onchange="togglePromotion()">
+            <span class="slider"></span>
+          </span>
+          <span class="toggle-label">Promotion</span>
+        </label>
+        <!-- Promotion Section -->
+        <div id="promotionSection" style="display:none;margin-bottom:16px">
+          <div id="ocrZonePromo" class="ocr-zone" style="margin-bottom:16px" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="this.classList.remove('dragging');handlePromoOcrFile(event.dataTransfer.files[0])">
+            <label for="ocrInputPromo">
+              <span class="ocr-zone-icon">📷</span>
+              <span class="ocr-zone-title">Upload image to auto-fill fields</span>
+              <span class="ocr-zone-sub">Extracts Basic, HRA, Medical, Conveyance</span>
+            </label>
+            <input type="file" id="ocrInputPromo" accept="image/*" hidden onchange="handlePromoOcrFile(this.files[0])">
+            <div class="ocr-progress-wrap" id="ocrProgressWrapPromo"><div class="ocr-progress-bar" id="ocrProgressBarPromo"></div></div>
+            <div class="ocr-zone-msg" id="ocrZoneMsgPromo"></div>
+          </div>
+          <div style="padding:0 0 4px">
+            <div class="period-hdr" style="margin-bottom:14px"><span>After Promotion</span><span class="period-badge">2 MONTHS</span></div>
+            <div class="g2">
+              <div class="field"><label>Basic salary (annual)</label><input type="text" inputmode="numeric" id="pBasic" value="0" oninput="onNumInput(this);calc()"></div>
+              <div class="field"><label>House rent allowance (annual)</label><input type="text" inputmode="numeric" id="pHra" value="0" oninput="onNumInput(this);calc()"></div>
+              <div class="field"><label>Medical allowance (annual)</label><input type="text" inputmode="numeric" id="pMedical" value="0" oninput="onNumInput(this);calc()"></div>
+              <div class="field"><label>Conveyance allowance (annual)</label><input type="text" inputmode="numeric" id="pConveyance" value="0" oninput="onNumInput(this);calc()"></div>
+            </div>
+            <div class="field mt10"><label id="pPfLbl">Provident fund: Employer Contribution (10% of basic)</label><input type="text" id="pPfDisplay" readonly tabindex="-1"></div>
           </div>
         </div>
         <div class="sub-title">Festival Bonuses</div>
@@ -1106,6 +1164,7 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
               <label><input type="radio" name="fest1" value="before" checked onchange="onFestChange(1)"><span>Before</span></label>
               <label><input type="radio" name="fest1" value="after" onchange="onFestChange(1)"><span>After</span></label>
               <label><input type="radio" name="fest1" value="manual" onchange="onFestChange(1)"><span>Manual</span></label>
+              <label id="fest1PromoOpt" style="display:none"><input type="radio" name="fest1" value="promotion" onchange="onFestChange(1)"><span>Promo</span></label>
             </div>
           </div>
           <div class="fest-val-wrap">
@@ -1120,6 +1179,7 @@ body.light-mode .ocr-field-row input{background:#f9fafb;border-color:#d1d5db;col
               <label><input type="radio" name="fest2" value="before" onchange="onFestChange(2)"><span>Before</span></label>
               <label><input type="radio" name="fest2" value="after" checked onchange="onFestChange(2)"><span>After</span></label>
               <label><input type="radio" name="fest2" value="manual" onchange="onFestChange(2)"><span>Manual</span></label>
+              <label id="fest2PromoOpt" style="display:none"><input type="radio" name="fest2" value="promotion" onchange="onFestChange(2)"><span>Promo</span></label>
             </div>
           </div>
           <div class="fest-val-wrap">
@@ -1584,6 +1644,8 @@ let invEnabled={dps:false,sanch:false,life:false,govSec:false,stocks:false};
 // Salary input mode: 'basic' (default) or 'details'
 let salaryMode='basic';
 let sbFestEdited=false;
+let promoEnabled=false;
+let _promoOcrImageUrl=null;
 
 const SLAB_PRESETS={
   '2025':[
@@ -1839,13 +1901,14 @@ function resetModalSlabs(){
 }
 
 // ─── Festival bonus ───────────────────────────────────────────────────────────
-const FEST_HINTS={before:'Auto — before basic ÷ 12',after:'Auto — after basic ÷ 12',manual:'Manual entry'};
+const FEST_HINTS={before:'Auto — before basic ÷ 12',after:'Auto — after basic ÷ 12',promotion:'Auto — promotion basic ÷ 12',manual:'Manual entry'};
 function onFestChange(n){
   const mode=document.querySelector(`input[name="fest${n}"]:checked`).value;
   const inp=$('fest'+n+'Val'),hint=$('fest'+n+'Hint');
   hint.textContent=FEST_HINTS[mode];
   if(mode==='before'){setVal('fest'+n+'Val',Math.round(v('bBasic')/12));inp.readOnly=true;}
   else if(mode==='after'){setVal('fest'+n+'Val',Math.round(v('aBasic')/12));inp.readOnly=true;}
+  else if(mode==='promotion'){setVal('fest'+n+'Val',Math.round(v('pBasic')/12));inp.readOnly=true;}
   else inp.readOnly=false;
   calc();
 }
@@ -1854,7 +1917,23 @@ function syncFestAuto(){
     const mode=document.querySelector(`input[name="fest${n}"]:checked`).value;
     if(mode==='before')setVal('fest'+n+'Val',Math.round(v('bBasic')/12));
     if(mode==='after') setVal('fest'+n+'Val',Math.round(v('aBasic')/12));
+    if(mode==='promotion') setVal('fest'+n+'Val',Math.round(v('pBasic')/12));
   });
+}
+function togglePromotion(){
+  promoEnabled=$('chkPromotion').checked;
+  $('promotionSection').style.display=promoEnabled?'block':'none';
+  $('afterBadge').textContent=promoEnabled?'1 MONTH':'3 MONTHS';
+  ['fest1PromoOpt','fest2PromoOpt'].forEach(id=>{$(id).style.display=promoEnabled?'':'none';});
+  if(!promoEnabled){
+    [1,2].forEach(n=>{
+      const sel=document.querySelector(`input[name="fest${n}"]:checked`);
+      if(sel&&sel.value==='promotion')
+        document.querySelector(`input[name="fest${n}"][value="after"]`).checked=true;
+    });
+  }
+  syncFestAuto();
+  calc();
 }
 
 // ─── LFA toggle ───────────────────────────────────────────────────────────────
@@ -1955,6 +2034,7 @@ function renderDeds(){
 function calc(){
   const PF_RATE=config.pfRate/100;
   let _bB,_aB,_bH,_aH,_bM,_aM,_bC,_aC,_lfa,_fest1,_fest2;
+  let _pB=0,_pH=0,_pM=0,_pC=0;
 
   if(salaryMode==='basic'){
     _bB=_aB=v('sbBasic'); _bH=_aH=v('sbHra');
@@ -1974,23 +2054,36 @@ function calc(){
     _lfa=v('lfa'); _fest1=v('fest1Val'); _fest2=v('fest2Val');
     const pfLbl=`Provident fund: Employer Contribution (${config.pfRate}% of basic)`;
     $('bPfLbl').textContent=pfLbl; $('aPfLbl').textContent=pfLbl;
+    const effA=promoEnabled?1:A_MONTHS;
     setVal('bPfDisplay',_bB*PF_RATE/12*B_MONTHS);
-    setVal('aPfDisplay',_aB*PF_RATE/12*A_MONTHS);
+    setVal('aPfDisplay',_aB*PF_RATE/12*effA);
+    if(promoEnabled){
+      _pB=v('pBasic');_pH=v('pHra');_pM=v('pMedical');_pC=v('pConveyance');
+      $('pPfLbl').textContent=pfLbl;
+      setVal('pPfDisplay',_pB*PF_RATE/12*2);
+    }
   }
 
-  const bPfEmp=_bB*PF_RATE/12*B_MONTHS, aPfEmp=_aB*PF_RATE/12*A_MONTHS;
+  const effA=salaryMode==='details'?(promoEnabled?1:A_MONTHS):A_MONTHS;
+  const bPfEmp=_bB*PF_RATE/12*B_MONTHS, aPfEmp=_aB*PF_RATE/12*effA;
 
   const bBasic9=_bB/12*B_MONTHS, bHra9=_bH/12*B_MONTHS;
   const bMed9=_bM/12*B_MONTHS,   bConv9=_bC/12*B_MONTHS;
   const beforeTotal=bBasic9+bHra9+bMed9+bConv9+bPfEmp;
 
-  const aBasic3=_aB/12*A_MONTHS, aHra3=_aH/12*A_MONTHS;
-  const aMed3=_aM/12*A_MONTHS,   aConv3=_aC/12*A_MONTHS;
-  const afterTotal=aBasic3+aHra3+aMed3+aConv3+aPfEmp;
+  const aBasicE=_aB/12*effA, aHraE=_aH/12*effA;
+  const aMedE=_aM/12*effA,   aConvE=_aC/12*effA;
+  const afterTotal=aBasicE+aHraE+aMedE+aConvE+aPfEmp;
+
+  let promoTotal=0,pPfEmp=0;
+  if(promoEnabled&&salaryMode==='details'){
+    pPfEmp=_pB*PF_RATE/12*2;
+    promoTotal=_pB/12*2+_pH/12*2+_pM/12*2+_pC/12*2+pPfEmp;
+  }
 
   const fest1=_fest1, fest2=_fest2, festTotal=fest1+fest2;
   const lfa=_lfa, perf=v('annualPerf'), profit=v('profitShare');
-  const totalIncome=beforeTotal+afterTotal+festTotal+lfa+perf+profit;
+  const totalIncome=beforeTotal+afterTotal+promoTotal+festTotal+lfa+perf+profit;
 
   const nonTaxable=Math.min(totalIncome/3,config.nonTaxable);
   const taxableIncome=Math.max(0,totalIncome-nonTaxable);
@@ -2003,7 +2096,7 @@ function calc(){
   const stocksElig = invEnabled.stocks ? v('invStocks')                              : 0;
 
   // PF both sides = (employer+employee) × 2 per side
-  const bPfBoth=bPfEmp*2,aPfBoth=aPfEmp*2,pfBothSides=bPfBoth+aPfBoth;
+  const bPfBoth=bPfEmp*2,aPfBoth=aPfEmp*2,pPfBoth=pPfEmp*2,pfBothSides=bPfBoth+aPfBoth+pPfBoth;
 
   if(invEnabled.dps){
     setVal('invDpsMaxDisplay',config.dpsMax);
@@ -2668,6 +2761,117 @@ function applyDetailsOcrResult() {
   markDirty();
   calc();
   closeDetailsOcrModal();
+}
+
+// ─── Promotion OCR ────────────────────────────────────────────────────────────
+function parsePromoSalaryText(text){
+  // Split into trimmed, non-empty lines
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+
+  // Extract the largest number ≥ 1000 from a string (handles "50,000.00", "50000", etc.)
+  const extractNum=str=>{
+    const matches=str.match(/[\d,]+(?:\.\d+)?/g)||[];
+    const nums=matches.map(m=>parseFloat(m.replace(/,/g,''))).filter(n=>n>=1000);
+    return nums.length?Math.max(...nums):0;
+  };
+
+  // Keyword groups: first match wins per field
+  const KEYS={
+    basic:      [/basic\s*salary/i,           /basic\s*pay/i,      /মূল\s*বেতন/],
+    hra:        [/house\s*rent\s*allowance/i,  /house\s*rent/i,     /h\.?r\.?a\.?/i, /বাড়ি\s*ভাড়া/],
+    medical:    [/medical\s*allowance/i,       /medical/i,          /চিকিৎসা/],
+    conveyance: [/conveyance\s*allowance/i,    /conveyance/i,       /যাতায়াত/],
+  };
+
+  const result={basic:0,hra:0,medical:0,conveyance:0};
+
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i];
+    for(const [key,patterns] of Object.entries(KEYS)){
+      if(result[key]>0) continue;           // already found this field
+      for(const pat of patterns){
+        if(!pat.test(line)) continue;
+        // Try to get number from the same line (after removing the matched keyword)
+        let num=extractNum(line.replace(pat,''));
+        // FIX 3: If not found on this line, look ahead up to 3 lines
+        let offset=1;
+        while(!num && i+offset<lines.length && offset<=3){
+          num=extractNum(lines[i+offset]);
+          offset++;
+        }
+        if(num>0){ result[key]=num; break; }
+      }
+    }
+  }
+  return result;
+}
+
+async function handlePromoOcrFile(file){
+  if(!file) return;
+  if(file.size>10*1024*1024){showPromoOcrMsg('File too large (max 10 MB).',true);return;}
+  showPromoOcrMsg('',false);
+  const wrap=$('ocrProgressWrapPromo'),bar=$('ocrProgressBarPromo');
+  if(wrap){wrap.style.display='block';bar.style.width='0%';}
+  if(_promoOcrImageUrl)URL.revokeObjectURL(_promoOcrImageUrl);
+  _promoOcrImageUrl=URL.createObjectURL(file);
+  try{
+    // FIX 1: Use preprocessImageForTable to remove table borders
+    const processed=await preprocessImageForTable(file);
+    const base=_ocrBase();
+    // FIX 2: Apply page segmentation mode '6' so it reads rows horizontally
+    const {data:{text}}=await Tesseract.recognize(processed,'eng+ben',{
+      workerPath:base+'worker.min.js',
+      corePath:base+'tesseract-core.wasm.js',
+      langPath:base,
+      tessedit_pageseg_mode:'6',
+      preserve_interword_spaces:'1',
+      logger:m=>{if(m.status==='recognizing text'&&bar)bar.style.width=Math.round((m.progress||0)*100)+'%';}
+    });
+    if(wrap)wrap.style.display='none';
+    console.log('[Promo OCR raw text]\n',text);
+    showPromoOcrPreview(parsePromoSalaryText(text));
+  }catch(e){
+    if(wrap)wrap.style.display='none';
+    showPromoOcrMsg('OCR failed. Try a clearer, well-lit photo.',true);
+    console.error('Promo OCR error',e);
+  }
+  const inp=$('ocrInputPromo');if(inp)inp.value='';
+}
+function showPromoOcrMsg(msg,isErr){
+  const el=$('ocrZoneMsgPromo');
+  if(!el)return;
+  el.textContent=msg;
+  el.style.color=isErr?'#f87171':'#94A3B8';
+  el.style.display=msg?'block':'none';
+}
+function showPromoOcrPreview(data){
+  ['Basic','Hra','Medical','Conveyance'].forEach(f=>{
+    const k=f.charAt(0).toLowerCase()+f.slice(1);
+    const el=$('ocrP'+f);
+    if(el)el.value=data[k]>0?Math.round(data[k]).toLocaleString('en-IN'):'0';
+  });
+  const img=$('ocrPromoPreviewImg');
+  if(img)img.src=_promoOcrImageUrl||'';
+  $('ocrModalPromo').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePromoOcrModal(){
+  $('ocrModalPromo').classList.remove('open');
+  document.body.style.overflow='';
+}
+function applyPromoOcrResult(){
+  const basic      =_parseOcrField('ocrPBasic');
+  const hra        =_parseOcrField('ocrPHra');
+  const medical    =_parseOcrField('ocrPMedical');
+  const conveyance =_parseOcrField('ocrPConveyance');
+  if(basic)       setVal('pBasic',      basic);
+  if(hra)         setVal('pHra',        hra);
+  if(medical)     setVal('pMedical',    medical);
+  if(conveyance)  setVal('pConveyance', conveyance);
+  markDirty();
+  closePromoOcrModal();
+  syncFestAuto();
+  calc();
 }
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
